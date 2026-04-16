@@ -1,0 +1,2477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>趣味识字乐园 - 分级阅读</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+  <style>
+/* ==========================================
+   分级识字阅读网站 - 全局样式
+   ========================================== */
+
+/* CSS 变量 - 儿童友好配色 */
+:root {
+  --primary: #FF6B6B;
+  --primary-light: #FFE0E0;
+  --secondary: #4ECDC4;
+  --secondary-light: #D4F5F2;
+  --accent: #FFE66D;
+  --accent-dark: #FFD93D;
+  --purple: #A78BFA;
+  --purple-light: #EDE9FE;
+  --blue: #60A5FA;
+  --blue-light: #DBEAFE;
+  --green: #34D399;
+  --green-light: #D1FAE5;
+  --orange: #FB923C;
+  --orange-light: #FED7AA;
+  --pink: #F472B6;
+  --pink-light: #FCE7F3;
+  --bg: #FFF9F0;
+  --card-bg: #FFFFFF;
+  --text: #2D3436;
+  --text-light: #636E72;
+  --shadow: 0 4px 15px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 背景装饰 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255,107,107,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(78,205,196,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255,230,109,0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 页面容器 */
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* 页面切换动画 */
+.page {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.page.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes starPop {
+  0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+  60% { transform: scale(1.3) rotate(10deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* ==========================================
+   首页样式
+   ========================================== */
+
+.home-header {
+  text-align: center;
+  padding: 30px 0 20px;
+}
+
+.home-logo {
+  font-size: 64px;
+  margin-bottom: 10px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.home-title {
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--purple), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.home-subtitle {
+  font-size: 16px;
+  color: var(--text-light);
+}
+
+/* 进度卡片 */
+.progress-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 20px 0;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.progress-icon {
+  font-size: 48px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.progress-info {
+  flex: 1;
+}
+
+.progress-label {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 16px;
+  background: #F0F0F0;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent), var(--green));
+  border-radius: 8px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progress-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+.progress-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 分级读物卡片 */
+.level-section {
+  margin: 24px 0;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.level-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.level-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.level-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.level-card[data-level="level1"]::before { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+.level-card[data-level="level2"]::before { background: linear-gradient(90deg, var(--secondary), var(--blue)); }
+
+.level-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.level-icon {
+  font-size: 40px;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+}
+
+.level-card[data-level="level1"] .level-icon { background: var(--primary-light); }
+.level-card[data-level="level2"] .level-icon { background: var(--secondary-light); }
+
+.level-name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.level-desc {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.level-weeks {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.week-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  background: #F5F5F5;
+  transition: var(--transition);
+}
+
+.week-badge.completed {
+  background: var(--green-light);
+  color: #059669;
+}
+
+.week-badge.in-progress {
+  background: var(--accent);
+  color: #92400E;
+}
+
+/* ==========================================
+   级别详情页
+   ========================================== */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.back-btn:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* 周卡片 */
+.week-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: var(--transition);
+  border-left: 5px solid #E0E0E0;
+  position: relative;
+}
+
+.week-card:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.week-card.unlocked { border-left-color: var(--green); }
+.week-card.current { border-left-color: var(--accent-dark); }
+.week-card.locked { opacity: 0.6; cursor: not-allowed; }
+.week-card.completed { border-left-color: var(--secondary); }
+
+.week-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.week-card-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.week-card-theme {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.week-card-stars {
+  font-size: 20px;
+}
+
+.week-card-progress {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.week-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #F0F0F0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.week-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--green), var(--secondary));
+  transition: width 0.5s ease;
+}
+
+.week-progress-text {
+  font-size: 12px;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+.lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.5);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+/* ==========================================
+   学习页 - 汉字学习
+   ========================================== */
+
+.learn-nav {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.learn-nav-item {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 2px solid #E0E0E0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-light);
+}
+
+.learn-nav-item.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.learn-nav-item.completed {
+  background: var(--green-light);
+  border-color: var(--green);
+  color: #059669;
+}
+
+/* 汉字卡片 */
+.char-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 30px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: bounceIn 0.5s ease;
+}
+
+.char-image {
+  font-size: 80px;
+  margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.char-display {
+  font-size: 120px;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1.2;
+  margin: 16px 0;
+  text-shadow: 3px 3px 0 rgba(255,107,107,0.1);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.char-display:hover {
+  transform: scale(1.05);
+}
+
+.char-pinyin {
+  font-size: 28px;
+  color: var(--secondary);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.char-meaning {
+  font-size: 18px;
+  color: var(--text-light);
+  margin-bottom: 16px;
+}
+
+.char-words {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.char-word-tag {
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: var(--purple-light);
+  color: var(--purple);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.char-stroke-hint {
+  background: var(--orange-light);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-top: 16px;
+  font-size: 15px;
+  color: #9A4E00;
+  line-height: 1.6;
+}
+
+.char-stroke-hint::before {
+  content: '✏️ 怎么记这个字：';
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.char-sentence {
+  background: var(--blue-light);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-top: 12px;
+  font-size: 18px;
+  color: #1E40AF;
+  line-height: 1.6;
+}
+
+.char-sentence::before {
+  content: '📖 例句：';
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+/* 学习导航按钮 */
+.learn-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  gap: 12px;
+}
+
+.btn {
+  padding: 14px 28px;
+  border-radius: 50px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #FF8E8E);
+  color: white;
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--secondary), #7EDDD6);
+  color: white;
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+  color: #78350F;
+}
+
+.btn-purple {
+  background: linear-gradient(135deg, var(--purple), #C4B5FD);
+  color: white;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid #E0E0E0;
+  color: var(--text);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ==========================================
+   练习页
+   ========================================== */
+
+.exercise-container {
+  animation: slideUp 0.4s ease;
+}
+
+.exercise-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.exercise-progress {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.exercise-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #E0E0E0;
+  transition: var(--transition);
+}
+
+.exercise-dot.active {
+  background: var(--primary);
+  transform: scale(1.3);
+}
+
+.exercise-dot.correct {
+  background: var(--green);
+}
+
+.exercise-dot.wrong {
+  background: var(--primary);
+}
+
+.exercise-type-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.exercise-type-badge.match { background: var(--purple-light); color: var(--purple); }
+.exercise-type-badge.fill { background: var(--blue-light); color: var(--blue); }
+.exercise-type-badge.read { background: var(--green-light); color: #059669; }
+
+.exercise-question {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+/* 配对游戏 */
+.match-game {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.match-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.match-column-title {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.match-item {
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 28px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  border: 3px solid transparent;
+  user-select: none;
+}
+
+.match-item.char-item {
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.match-item:hover {
+  transform: scale(1.05);
+  border-color: var(--primary);
+}
+
+.match-item.selected {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  animation: pulse 0.5s ease;
+}
+
+.match-item.matched {
+  border-color: var(--green);
+  background: var(--green-light);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.match-item.wrong {
+  border-color: var(--primary);
+  animation: shake 0.5s ease;
+}
+
+/* 选字填空 */
+.fill-question {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 30px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+.fill-sentence {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.8;
+  margin: 16px 0;
+}
+
+.fill-blank {
+  display: inline-block;
+  min-width: 60px;
+  border-bottom: 4px dashed var(--primary);
+  color: var(--primary);
+  padding: 0 8px;
+  transition: var(--transition);
+}
+
+.fill-blank.filled {
+  border-bottom-style: solid;
+  animation: bounceIn 0.3s ease;
+}
+
+.fill-options {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.fill-option {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-sm);
+  border: 3px solid #E0E0E0;
+  background: var(--card-bg);
+  font-size: 36px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fill-option:hover {
+  border-color: var(--blue);
+  transform: scale(1.1);
+}
+
+.fill-option.correct {
+  border-color: var(--green);
+  background: var(--green-light);
+  animation: bounceIn 0.3s ease;
+}
+
+.fill-option.wrong {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  animation: shake 0.5s ease;
+}
+
+/* 句子阅读 */
+.read-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 30px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.read-sentence {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 2;
+  margin: 20px 0;
+}
+
+.read-char {
+  display: inline-block;
+  padding: 4px 8px;
+  margin: 2px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.read-char:hover {
+  background: var(--accent);
+  transform: scale(1.1);
+}
+
+.read-char.highlight {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.read-char.clicked {
+  background: var(--green-light);
+  color: #059669;
+  animation: bounceIn 0.3s ease;
+}
+
+.read-hint {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-top: 16px;
+}
+
+/* 反馈弹窗 */
+.feedback-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.feedback-popup {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 40px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: bounceIn 0.4s ease;
+  max-width: 320px;
+  width: 90%;
+}
+
+.feedback-emoji {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.feedback-text {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.feedback-sub {
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+/* ==========================================
+   绘本阅读器
+   ========================================== */
+
+.story-reader {
+  animation: slideUp 0.4s ease;
+}
+
+.story-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.story-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.story-page-container {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.story-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 30px;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+.story-illustration {
+  font-size: 100px;
+  margin-bottom: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.story-text {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 2;
+  letter-spacing: 4px;
+}
+
+.story-page-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--card-bg);
+  border-top: 1px solid #F0F0F0;
+}
+
+.story-page-indicator {
+  font-size: 14px;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+/* 完成庆祝 */
+.celebration {
+  text-align: center;
+  padding: 40px 20px;
+  animation: bounceIn 0.6s ease;
+}
+
+.celebration-emoji {
+  font-size: 80px;
+  margin-bottom: 16px;
+  animation: float 2s ease-in-out infinite;
+}
+
+.celebration-title {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--accent), var(--green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.celebration-subtitle {
+  font-size: 16px;
+  color: var(--text-light);
+  margin-bottom: 24px;
+}
+
+.celebration-stars {
+  font-size: 48px;
+  margin-bottom: 24px;
+}
+
+.celebration-stars .star {
+  display: inline-block;
+  animation: starPop 0.5s ease forwards;
+  opacity: 0;
+}
+
+.celebration-stars .star:nth-child(1) { animation-delay: 0.2s; }
+.celebration-stars .star:nth-child(2) { animation-delay: 0.5s; }
+.celebration-stars .star:nth-child(3) { animation-delay: 0.8s; }
+
+/* ==========================================
+   设置页
+   ========================================== */
+
+.settings-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.settings-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #F5F5F5;
+}
+
+.settings-item:last-child {
+  border-bottom: none;
+}
+
+.settings-label {
+  font-size: 15px;
+}
+
+.settings-desc {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+/* 开关 */
+.toggle {
+  width: 52px;
+  height: 28px;
+  border-radius: 14px;
+  background: #E0E0E0;
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.toggle.active {
+  background: var(--green);
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: var(--transition);
+}
+
+.toggle.active::after {
+  left: 26px;
+}
+
+/* ==========================================
+   底部导航
+   ========================================== */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  z-index: 100;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.nav-item.active {
+  color: var(--primary);
+}
+
+.nav-item-icon {
+  font-size: 24px;
+}
+
+.nav-item-label {
+  font-weight: 600;
+}
+
+/* ==========================================
+   响应式设计
+   ========================================== */
+
+@media (max-width: 600px) {
+  .app-container {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+
+  .home-title {
+    font-size: 26px;
+  }
+
+  .char-display {
+    font-size: 96px;
+  }
+
+  .char-image {
+    font-size: 60px;
+  }
+
+  .read-sentence {
+    font-size: 28px;
+  }
+
+  .story-text {
+    font-size: 24px;
+  }
+
+  .match-game {
+    gap: 12px;
+  }
+
+  .fill-sentence {
+    font-size: 26px;
+  }
+
+  .fill-option {
+    width: 64px;
+    height: 64px;
+    font-size: 28px;
+  }
+
+  .progress-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (min-width: 601px) {
+  .app-container {
+    padding-bottom: 80px;
+  }
+}
+
+/* ==========================================
+   工具类
+   ========================================== */
+
+.text-center { text-align: center; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="app-container" id="app">
+
+    <!-- ==================== 首页 ==================== -->
+    <div class="page active" id="page-home">
+      <div class="home-header">
+        <div class="home-logo">📚</div>
+        <h1 class="home-title">趣味识字乐园</h1>
+        <p class="home-subtitle">每天一点点，轻松认汉字！</p>
+      </div>
+
+      <!-- 总进度 -->
+      <div class="progress-card" id="home-progress">
+        <div class="progress-icon">🏆</div>
+        <div class="progress-info">
+          <div class="progress-label">学习进度</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="home-progress-bar" style="width: 0%"></div>
+          </div>
+          <div class="progress-stats">
+            <span>📖 <span id="stat-weeks">0/0</span> 周</span>
+            <span>📝 <span id="stat-chars">0/0</span> 字</span>
+            <span>⭐ <span id="stat-stars">0</span> 星</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分级读物列表 -->
+      <div id="level-list"></div>
+    </div>
+
+    <!-- ==================== 级别详情页 ==================== -->
+    <div class="page" id="page-level">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('home')">←</button>
+        <h2 class="page-title" id="level-title"></h2>
+      </div>
+      <div id="week-list"></div>
+    </div>
+
+    <!-- ==================== 学习页 ==================== -->
+    <div class="page" id="page-learn">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('level')">←</button>
+        <h2 class="page-title" id="learn-title"></h2>
+      </div>
+
+      <!-- 学习导航 -->
+      <div class="learn-nav" id="learn-nav"></div>
+
+      <!-- 汉字卡片 -->
+      <div id="char-card-container"></div>
+
+      <!-- 学习操作按钮 -->
+      <div class="learn-actions" id="learn-actions">
+        <button class="btn btn-outline" id="btn-prev-char" onclick="prevChar()">⬅️ 上一个</button>
+        <button class="btn btn-primary" id="btn-start-practice" onclick="startPractice()">🎮 开始练习</button>
+        <button class="btn btn-outline" id="btn-next-char" onclick="nextChar()">下一个 ➡️</button>
+      </div>
+    </div>
+
+    <!-- ==================== 练习页 ==================== -->
+    <div class="page" id="page-practice">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('learn')">←</button>
+        <h2 class="page-title">互动练习</h2>
+      </div>
+      <div class="exercise-container" id="exercise-container"></div>
+    </div>
+
+    <!-- ==================== 绘本阅读页 ==================== -->
+    <div class="page" id="page-story">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('practice')">←</button>
+        <h2 class="page-title">📖 绘本时间</h2>
+      </div>
+      <div class="story-reader" id="story-reader"></div>
+    </div>
+
+    <!-- ==================== 完成庆祝页 ==================== -->
+    <div class="page" id="page-complete">
+      <div class="celebration" id="celebration-content"></div>
+    </div>
+
+    <!-- ==================== 设置页 ==================== -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('home')">←</button>
+        <h2 class="page-title">设置</h2>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">🔊 音效</div>
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">音效</div>
+            <div class="settings-desc">答题正确/错误时播放音效</div>
+          </div>
+          <div class="toggle active" id="toggle-sound" onclick="toggleSound()"></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">📊 学习数据</div>
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">重置学习进度</div>
+            <div class="settings-desc">清除所有学习记录，重新开始</div>
+          </div>
+          <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="resetProgress()">重置</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">ℹ️ 关于</div>
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">趣味识字乐园</div>
+            <div class="settings-desc">为幼儿园小朋友设计的分级识字阅读工具</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 反馈弹窗 ==================== -->
+    <div class="feedback-overlay hidden" id="feedback-overlay" onclick="closeFeedback()">
+      <div class="feedback-popup" id="feedback-popup">
+        <div class="feedback-emoji" id="feedback-emoji"></div>
+        <div class="feedback-text" id="feedback-text"></div>
+        <div class="feedback-sub" id="feedback-sub"></div>
+      </div>
+    </div>
+
+    <!-- ==================== 底部导航 ==================== -->
+    <div class="bottom-nav">
+      <button class="nav-item active" onclick="navigateTo('home')" data-nav="home">
+        <span class="nav-item-icon">🏠</span>
+        <span class="nav-item-label">首页</span>
+      </button>
+      <button class="nav-item" onclick="navigateTo('settings')" data-nav="settings">
+        <span class="nav-item-icon">⚙️</span>
+        <span class="nav-item-label">设置</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+// ==========================================
+// 分级识字阅读网站 - 数据层
+// ==========================================
+
+// 分级读物体系
+const BOOK_SERIES = [
+  {
+    id: 'level1',
+    name: '第一级：启蒙认字',
+    description: '适合零基础，从最简单的汉字开始',
+    color: '#FF6B6B',
+    icon: '🌱',
+    weeks: [
+      {
+        id: 'w1',
+        name: '第1周：认识我自己',
+        theme: '身体与自我',
+        characters: [
+          { char: '人', pinyin: 'rén', meaning: '人', image: '👤', words: ['大人', '人们'], sentence: '我是一个人。', strokeHint: '一撇一捺，像一个人站着' },
+          { char: '大', pinyin: 'dà', meaning: '大', image: '💪', words: ['大人', '大家'], sentence: '爸爸的手很大。', strokeHint: '一横一撇一捺，张开双臂就是大' },
+          { char: '小', pinyin: 'xiǎo', meaning: '小', image: '🤏', words: ['小鸟', '小花'], sentence: '我是一只小鸟。', strokeHint: '竖钩加两点，像个小东西' },
+          { char: '口', pinyin: 'kǒu', meaning: '嘴巴', image: '👄', words: ['口水', '开口'], sentence: '张开小嘴巴。', strokeHint: '一个方框，就是嘴巴的形状' },
+          { char: '手', pinyin: 'shǒu', meaning: '手', image: '✋', words: ['小手', '握手'], sentence: '我有一双小手。', strokeHint: '像一只伸出的小手' },
+        ],
+        exercises: [
+          { type: 'match', question: '把字和图片连起来', pairs: [{char:'人',image:'👤'},{char:'口',image:'👄'},{char:'手',image:'✋'},{char:'大',image:'💪'},{char:'小',image:'🤏'}] },
+          { type: 'fill', question: '选字填空：我是一个（ ）', options: ['人','大','小'], answer: '人' },
+          { type: 'fill', question: '选字填空：爸爸的手很（ ）', options: ['小','大','口'], answer: '大' },
+          { type: 'read', question: '读一读这句话：', sentence: '我 是 一 个 人 。', highlight: ['我','是','一','个','人'] },
+        ],
+        story: {
+          title: '我',
+          pages: [
+            { text: '我 是 一 个 人 。', illustration: '👧', bg: '#FFE0E0' },
+            { text: '我 有 一 张 小 嘴 。', illustration: '👄', bg: '#E0FFE0' },
+            { text: '我 有 一 双 小 手 。', illustration: '✋', bg: '#E0E0FF' },
+            { text: '我 的 手 很 小 。', illustration: '🤏', bg: '#FFFFE0' },
+            { text: '爸 爸 的 手 很 大 。', illustration: '💪', bg: '#FFE0FF' },
+            { text: '我 长 大 了 ！', illustration: '🌟', bg: '#E0FFFF' },
+          ]
+        }
+      },
+      {
+        id: 'w2',
+        name: '第2周：我的家',
+        theme: '家庭',
+        characters: [
+          { char: '山', pinyin: 'shān', meaning: '山', image: '⛰️', words: ['大山', '山上'], sentence: '山上有一棵树。', strokeHint: '三座山峰连在一起' },
+          { char: '水', pinyin: 'shuǐ', meaning: '水', image: '💧', words: ['喝水', '山水'], sentence: '小鱼在水里游。', strokeHint: '中间竖钩，两边像水滴' },
+          { char: '火', pinyin: 'huǒ', meaning: '火', image: '🔥', words: ['大火', '火车'], sentence: '火红红的。', strokeHint: '中间一个人，两边是火焰' },
+          { char: '土', pinyin: 'tǔ', meaning: '土地', image: '🟤', words: ['土地', '泥土'], sentence: '小草在土里长出来。', strokeHint: '十下面一横，像地上的土' },
+          { char: '木', pinyin: 'mù', meaning: '树', image: '🌳', words: ['木头', '大树'], sentence: '小鸟在树上唱歌。', strokeHint: '一横一竖一撇一捺，像一棵树' },
+        ],
+        exercises: [
+          { type: 'match', question: '把字和图片连起来', pairs: [{char:'山',image:'⛰️'},{char:'水',image:'💧'},{char:'火',image:'🔥'},{char:'土',image:'🟤'},{char:'木',image:'🌳'}] },
+          { type: 'fill', question: '选字填空：小鱼在（ ）里游', options: ['火','水','山'], answer: '水' },
+          { type: 'fill', question: '选字填空：（ ）上有一棵树', options: ['水','火','山'], answer: '山' },
+          { type: 'read', question: '读一读这句话：', sentence: '山 上 有 一 棵 大 树 。', highlight: ['山','上','有','一','棵','大','树'] },
+        ],
+        story: {
+          title: '大树下',
+          pages: [
+            { text: '远 处 有 一 座 大 山 。', illustration: '⛰️', bg: '#E8F5E9' },
+            { text: '山 下 有 一 条 小 河 。', illustration: '💧', bg: '#E3F2FD' },
+            { text: '河 边 有 一 棵 大 树 。', illustration: '🌳', bg: '#F1F8E9' },
+            { text: '树 下 有 一 堆 火 。', illustration: '🔥', bg: '#FFF3E0' },
+            { text: '大 家 坐 在 土 地 上 。', illustration: '🟤', bg: '#FCE4EC' },
+            { text: '大 家 真 开 心 ！', illustration: '😊', bg: '#F3E5F5' },
+          ]
+        }
+      },
+      {
+        id: 'w3',
+        name: '第3周：数一数',
+        theme: '数字',
+        characters: [
+          { char: '一', pinyin: 'yī', meaning: '一', image: '1️⃣', words: ['一个', '一天'], sentence: '我有一个苹果。', strokeHint: '一横就是一' },
+          { char: '二', pinyin: 'èr', meaning: '二', image: '2️⃣', words: ['两个', '二月'], sentence: '我有两只手。', strokeHint: '两横就是二' },
+          { char: '三', pinyin: 'sān', meaning: '三', image: '3️⃣', words: ['三个', '三月'], sentence: '我家有三口人。', strokeHint: '三横就是三' },
+          { char: '十', pinyin: 'shí', meaning: '十', image: '🔟', words: ['十个', '十月'], sentence: '我有十个手指头。', strokeHint: '一横一竖交叉就是十' },
+          { char: '个', pinyin: 'gè', meaning: '个', image: '👆', words: ['一个', '个人'], sentence: '一个小朋友在玩。', strokeHint: '上面人下面竖，一个人站着' },
+        ],
+        exercises: [
+          { type: 'match', question: '把字和数字连起来', pairs: [{char:'一',image:'1️⃣'},{char:'二',image:'2️⃣'},{char:'三',image:'3️⃣'},{char:'十',image:'🔟'}] },
+          { type: 'fill', question: '选字填空：我（ ）个苹果', options: ['三','十','个'], answer: '一' },
+          { type: 'fill', question: '选字填空：我有（ ）只手', options: ['一','二','三'], answer: '二' },
+          { type: 'read', question: '读一读这句话：', sentence: '我 有 三 个 好 朋 友 。', highlight: ['我','有','三','个','好','朋','友'] },
+        ],
+        story: {
+          title: '数一数',
+          pages: [
+            { text: '一 只 小 猫 。', illustration: '🐱', bg: '#FFF9C4' },
+            { text: '两 只 小 狗 。', illustration: '🐶', bg: '#F0F4C3' },
+            { text: '三 只 小 鸟 。', illustration: '🐦', bg: '#DCEDC8' },
+            { text: '十 条 小 鱼 。', illustration: '🐟', bg: '#C8E6C9' },
+            { text: '一 二 三 ， 十 ！', illustration: '🔢', bg: '#B2DFDB' },
+            { text: '我 会 数 数 了 ！', illustration: '🎉', bg: '#B2EBF2' },
+          ]
+        }
+      },
+      {
+        id: 'w4',
+        name: '第4周：天上有什么',
+        theme: '自然',
+        characters: [
+          { char: '日', pinyin: 'rì', meaning: '太阳', image: '☀️', words: ['日子', '日出'], sentence: '太阳出来了。', strokeHint: '一个框中间一横，像太阳' },
+          { char: '月', pinyin: 'yuè', meaning: '月亮', image: '🌙', words: ['月亮', '月光'], sentence: '月亮弯弯的。', strokeHint: '像一弯月亮' },
+          { char: '天', pinyin: 'tiān', meaning: '天空', image: '🌤️', words: ['天空', '今天'], sentence: '天上有白云。', strokeHint: '上面一横是天空，下面是人' },
+          { char: '上', pinyin: 'shàng', meaning: '上面', image: '⬆️', words: ['上面', '上山'], sentence: '小鸟在天上飞。', strokeHint: '下面一横是地面，竖线指向上方' },
+          { char: '下', pinyin: 'xià', meaning: '下面', image: '⬇️', words: ['下面', '下雨'], sentence: '小鱼在水下。', strokeHint: '上面一横，竖线指向下方' },
+        ],
+        exercises: [
+          { type: 'match', question: '把字和图片连起来', pairs: [{char:'日',image:'☀️'},{char:'月',image:'🌙'},{char:'天',image:'🌤️'},{char:'上',image:'⬆️'},{char:'下',image:'⬇️'}] },
+          { type: 'fill', question: '选字填空：（ ）上有一朵白云', options: ['月','天','下'], answer: '天' },
+          { type: 'fill', question: '选字填空：太阳从东边（ ）来了', options: ['下','上','月'], answer: '上' },
+          { type: 'read', question: '读一读这句话：', sentence: '天 上 有 太 阳 和 月 亮 。', highlight: ['天','上','有','太','阳','和','月','亮'] },
+        ],
+        story: {
+          title: '天上和地下',
+          pages: [
+            { text: '天 上 有 太 阳 。', illustration: '☀️', bg: '#FFFDE7' },
+            { text: '天 上 有 月 亮 。', illustration: '🌙', bg: '#E8EAF6' },
+            { text: '天 上 有 白 云 。', illustration: '☁️', bg: '#E3F2FD' },
+            { text: '地 下 有 小 草 。', illustration: '🌱', bg: '#E8F5E9' },
+            { text: '地 下 有 小 花 。', illustration: '🌸', bg: '#FCE4EC' },
+            { text: '天 上 地 下 真 美 ！', illustration: '🌈', bg: '#F3E5F5' },
+          ]
+        }
+      },
+    ]
+  },
+  {
+    id: 'level2',
+    name: '第二级：快乐阅读',
+    description: '认识更多常用字，开始读短句子',
+    color: '#4ECDC4',
+    icon: '🌿',
+    weeks: [
+      {
+        id: 'w5',
+        name: '第5周：动物朋友',
+        theme: '动物',
+        characters: [
+          { char: '牛', pinyin: 'niú', meaning: '牛', image: '🐮', words: ['水牛', '牛奶'], sentence: '牛在吃草。', strokeHint: '上面像牛角，下面是牛的身体' },
+          { char: '羊', pinyin: 'yáng', meaning: '羊', image: '🐑', words: ['小羊', '山羊'], sentence: '小羊在山上。', strokeHint: '上面像羊角，下面是羊的身体' },
+          { char: '鸟', pinyin: 'niǎo', meaning: '鸟', image: '🐦', words: ['小鸟', '鸟儿'], sentence: '小鸟在树上。', strokeHint: '上面像鸟头，下面像鸟的身体和爪子' },
+          { char: '虫', pinyin: 'chóng', meaning: '虫子', image: '🐛', words: ['小虫', '虫子'], sentence: '地上有一条小虫。', strokeHint: '中间一竖是身体，两边是脚' },
+          { char: '鱼', pinyin: 'yú', meaning: '鱼', image: '🐟', words: ['小鱼', '金鱼'], sentence: '鱼在水里游。', strokeHint: '上面像鱼头，中间田字是鱼身，下面一横是鱼尾' },
+        ],
+        exercises: [
+          { type: 'match', question: '把字和动物连起来', pairs: [{char:'牛',image:'🐮'},{char:'羊',image:'🐑'},{char:'鸟',image:'🐦'},{char:'虫',image:'🐛'},{char:'鱼',image:'🐟'}] },
+          { type: 'fill', question: '选字填空：（ ）在水里游', options: ['鸟','鱼','羊'], answer: '鱼' },
+          { type: 'fill', question: '选字填空：（ ）在吃草', options: ['鱼','鸟','牛'], answer: '牛' },
+          { type: 'read', question: '读一读这句话：', sentence: '小 鸟 在 树 上 ， 小 鱼 在 水 里 。', highlight: ['小','鸟','在','树','上','小','鱼','在','水','里'] },
+        ],
+        story: {
+          title: '动物们的家',
+          pages: [
+            { text: '小 鸟 的 家 在 树 上 。', illustration: '🌳🐦', bg: '#C8E6C9' },
+            { text: '小 鱼 的 家 在 水 里 。', illustration: '💧🐟', bg: '#B3E5FC' },
+            { text: '小 羊 的 家 在 山 上 。', illustration: '⛰️🐑', bg: '#DCEDC8' },
+            { text: '小 牛 的 家 在 草 地 上 。', illustration: '🌾🐮', bg: '#F1F8E9' },
+            { text: '小 虫 的 家 在 土 里 。', illustration: '🟤🐛', bg: '#D7CCC8' },
+            { text: '大 家 都 有 家 ！', illustration: '🏠', bg: '#FFE0B2' },
+          ]
+        }
+      },
+      {
+        id: 'w6',
+        name: '第6周：好吃的水果',
+        theme: '食物',
+        characters: [
+          { char: '果', pinyin: 'guǒ', meaning: '水果', image: '🍎', words: ['苹果', '水果'], sentence: '我喜欢吃水果。', strokeHint: '上面像树上的果子' },
+          { char: '米', pinyin: 'mǐ', meaning: '米', image: '🍚', words: ['大米', '米饭'], sentence: '我们吃米饭。', strokeHint: '像一粒粒米' },
+          { char: '竹', pinyin: 'zhú', meaning: '竹子', image: '🎋', words: ['竹子', '竹林'], sentence: '熊猫吃竹子。', strokeHint: '像两片竹叶' },
+          { char: '禾', pinyin: 'hé', meaning: '禾苗', image: '🌾', words: ['禾苗', '禾田'], sentence: '禾苗绿绿的。', strokeHint: '像一棵小禾苗' },
+          { char: '瓜', pinyin: 'guā', meaning: '瓜', image: '🍉', words: ['西瓜', '南瓜'], sentence: '西瓜甜甜的。', strokeHint: '外面是瓜皮，里面是瓜瓤' },
+        ],
+        exercises: [
+          { type: 'match', question: '把字和图片连起来', pairs: [{char:'果',image:'🍎'},{char:'米',image:'🍚'},{char:'竹',image:'🎋'},{char:'禾',image:'🌾'},{char:'瓜',image:'🍉'}] },
+          { type: 'fill', question: '选字填空：（ ）瓜甜甜的', options: ['米','西','竹'], answer: '西' },
+          { type: 'fill', question: '选字填空：熊猫吃（ ）子', options: ['瓜','米','竹'], answer: '竹' },
+          { type: 'read', question: '读一读这句话：', sentence: '我 喜 欢 吃 苹 果 和 西 瓜 。', highlight: ['我','喜','欢','吃','苹','果','和','西','瓜'] },
+        ],
+        story: {
+          title: '好吃的水果',
+          pages: [
+            { text: '苹 果 红 红 的 。', illustration: '🍎', bg: '#FFCDD2' },
+            { text: '西 瓜 大 大 的 。', illustration: '🍉', bg: '#C8E6C9' },
+            { text: '香 蕉 黄 黄 的 。', illustration: '🍌', bg: '#FFF9C4' },
+            { text: '葡 萄 紫 紫 的 。', illustration: '🍇', bg: '#E1BEE7' },
+            { text: '水 果 真 好 吃 ！', illustration: '😋', bg: '#FFE0B2' },
+            { text: '我 最 爱 吃 水 果 ！', illustration: '❤️', bg: '#F8BBD0' },
+          ]
+        }
+      },
+    ]
+  }
+];
+
+// ==========================================
+// 进度管理
+// ==========================================
+const ProgressManager = {
+  KEY: 'hanzi_learning_progress',
+
+  getProgress() {
+    const data = localStorage.getItem(this.KEY);
+    return data ? JSON.parse(data) : {};
+  },
+
+  saveProgress(progress) {
+    localStorage.setItem(this.KEY, JSON.stringify(progress));
+  },
+
+  // 获取某个级别的周学习状态
+  getWeekStatus(levelId, weekId) {
+    const progress = this.getProgress();
+    const key = `${levelId}_${weekId}`;
+    return progress[key] || { completed: false, stars: 0, learnedChars: [], exercisesDone: [], storyRead: false, lastAccess: null };
+  },
+
+  // 保存某个级别的周学习状态
+  setWeekStatus(levelId, weekId, status) {
+    const progress = this.getProgress();
+    const key = `${levelId}_${weekId}`;
+    progress[key] = { ...status, lastAccess: new Date().toISOString() };
+    this.saveProgress(progress);
+  },
+
+  // 标记汉字已学
+  markCharLearned(levelId, weekId, charIndex) {
+    const status = this.getWeekStatus(levelId, weekId);
+    if (!status.learnedChars.includes(charIndex)) {
+      status.learnedChars.push(charIndex);
+      this.setWeekStatus(levelId, weekId, status);
+    }
+  },
+
+  // 标记练习完成
+  markExerciseDone(levelId, weekId, exerciseIndex, correct) {
+    const status = this.getWeekStatus(levelId, weekId);
+    if (!status.exercisesDone.includes(exerciseIndex)) {
+      status.exercisesDone.push(exerciseIndex);
+    }
+    this.setWeekStatus(levelId, weekId, status);
+    return status;
+  },
+
+  // 标记绘本已读
+  markStoryRead(levelId, weekId) {
+    const status = this.getWeekStatus(levelId, weekId);
+    status.storyRead = true;
+    // 检查是否全部完成
+    const level = BOOK_SERIES.find(l => l.id === levelId);
+    const week = level?.weeks.find(w => w.id === weekId);
+    if (week && status.learnedChars.length >= week.characters.length &&
+        status.exercisesDone.length >= week.exercises.length && status.storyRead) {
+      status.completed = true;
+      status.stars = 3;
+    }
+    this.setWeekStatus(levelId, weekId, status);
+    return status;
+  },
+
+  // 获取总进度
+  getTotalProgress() {
+    let totalWeeks = 0;
+    let completedWeeks = 0;
+    let totalChars = 0;
+    let learnedChars = 0;
+
+    BOOK_SERIES.forEach(level => {
+      level.weeks.forEach(week => {
+        totalWeeks++;
+        totalChars += week.characters.length;
+        const status = this.getWeekStatus(level.id, week.id);
+        if (status.completed) completedWeeks++;
+        learnedChars += status.learnedChars.length;
+      });
+    });
+
+    return { totalWeeks, completedWeeks, totalChars, learnedChars, percentage: totalWeeks > 0 ? Math.round(completedWeeks / totalWeeks * 100) : 0 };
+  },
+
+  // 重置进度
+  resetProgress() {
+    localStorage.removeItem(this.KEY);
+  }
+};
+
+// ==========================================
+// 音效管理（使用 Web Audio API）
+// ==========================================
+const SoundManager = {
+  ctx: null,
+  getCtx() {
+    if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    return this.ctx;
+  },
+  playCorrect() {
+    try {
+      const ctx = this.getCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.setValueAtTime(523, ctx.currentTime);
+      osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+      osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    } catch(e) {}
+  },
+  playWrong() {
+    try {
+      const ctx = this.getCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      osc.frequency.setValueAtTime(150, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.3);
+    } catch(e) {}
+  },
+  playClick() {
+    try {
+      const ctx = this.getCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.1);
+    } catch(e) {}
+  },
+  playComplete() {
+    try {
+      const ctx = this.getCtx();
+      const notes = [523, 659, 784, 1047];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.15);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.15 + 0.3);
+        osc.start(ctx.currentTime + i * 0.15);
+        osc.stop(ctx.currentTime + i * 0.15 + 0.3);
+      });
+    } catch(e) {}
+  }
+};
+
+// ==========================================
+// 分级识字阅读网站 - 应用逻辑
+// ==========================================
+
+// 全局状态
+const state = {
+  currentLevel: null,
+  currentWeek: null,
+  currentCharIndex: 0,
+  currentExerciseIndex: 0,
+  currentStoryPage: 0,
+  matchState: { selected: null, matched: [] },
+  soundEnabled: true,
+};
+
+// ==========================================
+// 页面导航
+// ==========================================
+function navigateTo(page) {
+  SoundManager.playClick();
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+
+  // 更新底部导航
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.nav === page);
+  });
+
+  // 页面初始化
+  switch(page) {
+    case 'home': renderHome(); break;
+    case 'level': renderLevel(); break;
+    case 'learn': renderLearn(); break;
+    case 'practice': renderPractice(); break;
+    case 'story': renderStory(); break;
+  }
+
+  window.scrollTo(0, 0);
+}
+
+// ==========================================
+// 首页渲染
+// ==========================================
+function renderHome() {
+  const progress = ProgressManager.getTotalProgress();
+
+  // 更新进度条
+  document.getElementById('home-progress-bar').style.width = progress.percentage + '%';
+  document.getElementById('stat-weeks').textContent = `${progress.completedWeeks}/${progress.totalWeeks}`;
+  document.getElementById('stat-chars').textContent = `${progress.learnedChars}/${progress.totalChars}`;
+
+  // 计算总星数
+  let totalStars = 0;
+  BOOK_SERIES.forEach(level => {
+    level.weeks.forEach(week => {
+      totalStars += ProgressManager.getWeekStatus(level.id, week.id).stars;
+    });
+  });
+  document.getElementById('stat-stars').textContent = totalStars;
+
+  // 渲染分级读物列表
+  const container = document.getElementById('level-list');
+  container.innerHTML = BOOK_SERIES.map(level => {
+    let completedWeeks = 0;
+    let totalCharsInLevel = 0;
+    let learnedCharsInLevel = 0;
+    level.weeks.forEach(week => {
+      const status = ProgressManager.getWeekStatus(level.id, week.id);
+      if (status.completed) completedWeeks++;
+      totalCharsInLevel += week.characters.length;
+      learnedCharsInLevel += status.learnedChars.length;
+    });
+
+    return `
+      <div class="level-card" data-level="${level.id}" onclick="openLevel('${level.id}')">
+        <div class="level-card-header">
+          <div class="level-icon">${level.icon}</div>
+          <div>
+            <div class="level-name">${level.name}</div>
+            <div class="level-desc">${level.description}</div>
+          </div>
+        </div>
+        <div class="level-weeks">
+          ${level.weeks.map((week, i) => {
+            const status = ProgressManager.getWeekStatus(level.id, week.id);
+            let cls = '';
+            if (status.completed) cls = 'completed';
+            else if (status.learnedChars.length > 0) cls = 'in-progress';
+            return `<span class="week-badge ${cls}">${status.completed ? '✅' : status.learnedChars.length > 0 ? '📖' : '📕'} ${week.name}</span>`;
+          }).join('')}
+        </div>
+        <div style="margin-top: 12px; font-size: 13px; color: var(--text-light);">
+          进度：${completedWeeks}/${level.weeks.length} 周 · 已学 ${learnedCharsInLevel}/${totalCharsInLevel} 字
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ==========================================
+// 级别详情页
+// ==========================================
+function openLevel(levelId) {
+  state.currentLevel = levelId;
+  navigateTo('level');
+}
+
+function renderLevel() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  if (!level) return;
+
+  document.getElementById('level-title').textContent = level.name;
+
+  const container = document.getElementById('week-list');
+  container.innerHTML = level.weeks.map((week, index) => {
+    const status = ProgressManager.getWeekStatus(level.id, week.id);
+    const isUnlocked = index === 0 || ProgressManager.getWeekStatus(level.id, level.weeks[index - 1].id).completed;
+
+    let cardClass = 'week-card';
+    let lockHtml = '';
+    if (status.completed) cardClass += ' completed';
+    else if (status.learnedChars.length > 0) cardClass += ' current';
+    else if (isUnlocked) cardClass += ' unlocked';
+    else {
+      cardClass += ' locked';
+      lockHtml = '<div class="lock-overlay">🔒</div>';
+    }
+
+    const progress = week.characters.length > 0
+      ? Math.round(status.learnedChars.length / week.characters.length * 100)
+      : 0;
+
+    const starsHtml = status.stars > 0
+      ? '⭐'.repeat(status.stars) + '☆'.repeat(3 - status.stars)
+      : '';
+
+    return `
+      <div class="${cardClass}" onclick="${isUnlocked ? `openWeek('${level.id}', '${week.id}')` : ''}">
+        ${lockHtml}
+        <div class="week-card-header">
+          <div>
+            <div class="week-card-title">${week.name}</div>
+            <div class="week-card-theme">主题：${week.theme} · ${week.characters.length} 个新字</div>
+          </div>
+          <div class="week-card-stars">${starsHtml}</div>
+        </div>
+        <div class="week-card-progress">
+          <div class="week-progress-bar">
+            <div class="week-progress-fill" style="width: ${progress}%"></div>
+          </div>
+          <div class="week-progress-text">${progress}%</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ==========================================
+// 周学习页
+// ==========================================
+function openWeek(levelId, weekId) {
+  state.currentLevel = levelId;
+  state.currentWeek = weekId;
+  state.currentCharIndex = 0;
+  navigateTo('learn');
+}
+
+function renderLearn() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+  if (!level || !week) return;
+
+  document.getElementById('learn-title').textContent = week.name;
+
+  // 渲染学习导航
+  const nav = document.getElementById('learn-nav');
+  const status = ProgressManager.getWeekStatus(level.id, week.id);
+
+  nav.innerHTML = `
+    <button class="learn-nav-item ${state.currentCharIndex === -1 ? 'active' : ''}" onclick="showCharOverview()">📋 总览</button>
+    ${week.characters.map((char, i) => {
+      let cls = '';
+      if (i === state.currentCharIndex) cls = 'active';
+      else if (status.learnedChars.includes(i)) cls = 'completed';
+      return `<button class="learn-nav-item ${cls}" onclick="showChar(${i})">${char.char}</button>`;
+    }).join('')}
+    <button class="learn-nav-item ${status.exercisesDone.length >= week.exercises.length ? 'completed' : ''}" onclick="startPractice()">🎮 练习</button>
+    <button class="learn-nav-item ${status.storyRead ? 'completed' : ''}" onclick="navigateTo('story')" ${status.learnedChars.length < week.characters.length ? 'disabled' : ''}>📖 绘本</button>
+  `;
+
+  // 渲染汉字卡片
+  renderCharCard();
+}
+
+function showCharOverview() {
+  state.currentCharIndex = -1;
+
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+  const status = ProgressManager.getWeekStatus(level.id, week.id);
+
+  // 更新标题
+  document.getElementById('learn-title').textContent = week.name;
+
+  // 渲染总览卡片（不调用renderLearn，避免递归）
+  document.getElementById('char-card-container').innerHTML = `
+    <div class="char-card">
+      <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
+      <h3 style="font-size: 24px; margin-bottom: 16px;">本周学习内容</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 24px;">
+        ${week.characters.map((char, i) => `
+          <div style="width: 70px; height: 70px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; cursor: pointer; transition: all 0.3s;
+            ${status.learnedChars.includes(i) ? 'background: #D1FAE5; color: #059669;' : 'background: #FEE2E2; color: #DC2626;'}"
+            onclick="showChar(${i})"
+            onmouseover="this.style.transform='scale(1.1)'"
+            onmouseout="this.style.transform='scale(1)'">
+            ${char.char}
+          </div>
+        `).join('')}
+      </div>
+      <div style="font-size: 14px; color: var(--text-light);">
+        已学 ${status.learnedChars.length}/${week.characters.length} 个字
+      </div>
+    </div>
+  `;
+
+  document.getElementById('learn-actions').innerHTML = `
+    <div></div>
+    <button class="btn btn-primary" onclick="showChar(0)">开始学习第一个字 ➡️</button>
+    <div></div>
+  `;
+
+  // 更新导航栏高亮状态
+  updateLearnNav();
+}
+
+function showChar(index) {
+  state.currentCharIndex = index;
+  renderLearn();
+}
+
+function renderCharCard() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+
+  if (state.currentCharIndex < 0 || state.currentCharIndex >= week.characters.length) {
+    showCharOverview();
+    return;
+  }
+
+  const char = week.characters[state.currentCharIndex];
+  const status = ProgressManager.getWeekStatus(level.id, week.id);
+  const isLearned = status.learnedChars.includes(state.currentCharIndex);
+
+  // 标记为已学
+  if (!isLearned) {
+    ProgressManager.markCharLearned(level.id, week.id, state.currentCharIndex);
+  }
+
+  const container = document.getElementById('char-card-container');
+  container.innerHTML = `
+    <div class="char-card">
+      <div class="char-image">${char.image}</div>
+      <div class="char-pinyin">${char.pinyin}</div>
+      <div class="char-display" onclick="SoundManager.playClick()">${char.char}</div>
+      <div class="char-meaning">${char.meaning}</div>
+      <div class="char-words">
+        ${char.words.map(w => `<span class="char-word-tag">${w}</span>`).join('')}
+      </div>
+      <div class="char-stroke-hint">${char.strokeHint}</div>
+      <div class="char-sentence">${char.sentence}</div>
+    </div>
+  `;
+
+  // 更新按钮
+  const isFirst = state.currentCharIndex === 0;
+  const isLast = state.currentCharIndex === week.characters.length - 1;
+  const allLearned = status.learnedChars.length >= week.characters.length;
+
+  document.getElementById('learn-actions').innerHTML = `
+    <button class="btn btn-outline" onclick="prevChar()" ${isFirst ? 'disabled' : ''}>⬅️ 上一个</button>
+    ${isLast
+      ? `<button class="btn btn-accent" onclick="startPractice()">🎮 开始练习</button>`
+      : `<button class="btn btn-primary" onclick="nextChar()">下一个 ➡️</button>`
+    }
+  `;
+
+  // 更新导航栏高亮状态（不重新渲染整个学习页，避免无限递归）
+  updateLearnNav();
+}
+
+// ==========================================
+// 更新学习导航栏高亮状态（轻量级，不触发重新渲染）
+// ==========================================
+function updateLearnNav() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+  if (!level || !week) return;
+  const status = ProgressManager.getWeekStatus(level.id, week.id);
+  const navItems = document.querySelectorAll('.learn-nav-item');
+  navItems.forEach((item, idx) => {
+    item.classList.remove('active', 'completed');
+    if (idx === 0 && state.currentCharIndex === -1) item.classList.add('active');
+    else if (idx > 0 && idx <= week.characters.length) {
+      const charIdx = idx - 1;
+      if (charIdx === state.currentCharIndex) item.classList.add('active');
+      else if (status.learnedChars.includes(charIdx)) item.classList.add('completed');
+    }
+    else if (idx === week.characters.length + 1 && status.exercisesDone.length >= week.exercises.length) item.classList.add('completed');
+    else if (idx === week.characters.length + 2 && status.storyRead) item.classList.add('completed');
+  });
+}
+
+function prevChar() {
+  if (state.currentCharIndex > 0) {
+    state.currentCharIndex--;
+    renderCharCard();
+  }
+}
+
+function nextChar() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+  if (state.currentCharIndex < week.characters.length - 1) {
+    state.currentCharIndex++;
+    renderCharCard();
+  }
+}
+
+// ==========================================
+// 练习模块
+// ==========================================
+function startPractice() {
+  state.currentExerciseIndex = 0;
+  navigateTo('practice');
+}
+
+function renderPractice() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+  if (!week) return;
+
+  const container = document.getElementById('exercise-container');
+  const exercises = week.exercises;
+  const status = ProgressManager.getWeekStatus(level.id, week.id);
+
+  // 检查是否全部完成
+  if (state.currentExerciseIndex >= exercises.length) {
+    showExerciseComplete(level, week, status);
+    return;
+  }
+
+  const exercise = exercises[state.currentExerciseIndex];
+
+  // 渲染进度指示器
+  const dotsHtml = exercises.map((_, i) => {
+    let cls = 'exercise-dot';
+    if (i === state.currentExerciseIndex) cls += ' active';
+    else if (i < state.currentExerciseIndex) cls += ' correct';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  let typeLabel = '';
+  if (exercise.type === 'match') typeLabel = '🔗 连线配对';
+  else if (exercise.type === 'fill') typeLabel = '✏️ 选字填空';
+  else if (exercise.type === 'read') typeLabel = '📖 朗读句子';
+
+  let exerciseHtml = '';
+
+  if (exercise.type === 'match') {
+    exerciseHtml = renderMatchExercise(exercise);
+  } else if (exercise.type === 'fill') {
+    exerciseHtml = renderFillExercise(exercise);
+  } else if (exercise.type === 'read') {
+    exerciseHtml = renderReadExercise(exercise);
+  }
+
+  container.innerHTML = `
+    <div class="exercise-header">
+      <div class="exercise-progress">${dotsHtml}</div>
+      <span class="exercise-type-badge ${exercise.type}">${typeLabel}</span>
+      <div class="exercise-question">${exercise.question}</div>
+    </div>
+    ${exerciseHtml}
+    <div class="text-center mt-24">
+      <button class="btn btn-outline" onclick="skipExercise()" style="font-size: 14px;">跳过 ⏭️</button>
+    </div>
+  `;
+}
+
+function renderMatchExercise(exercise) {
+  // 打乱图片顺序
+  const shuffledImages = [...exercise.pairs].sort(() => Math.random() - 0.5);
+  state.matchState = { selected: null, matched: [], pairs: exercise.pairs };
+
+  return `
+    <div class="match-game">
+      <div class="match-column">
+        <div class="match-column-title">汉字</div>
+        ${exercise.pairs.map((pair, i) => `
+          <div class="match-item char-item" data-type="char" data-index="${i}" data-char="${pair.char}" onclick="selectMatchItem(this)">${pair.char}</div>
+        `).join('')}
+      </div>
+      <div class="match-column">
+        <div class="match-column-title">图片</div>
+        ${shuffledImages.map((pair, i) => `
+          <div class="match-item" data-type="image" data-char="${pair.char}" data-index="${i}" onclick="selectMatchItem(this)">${pair.image}</div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function selectMatchItem(el) {
+  const type = el.dataset.type;
+  const char = el.dataset.char;
+
+  if (el.classList.contains('matched')) return;
+
+  SoundManager.playClick();
+
+  if (!state.matchState.selected) {
+    // 第一次选择
+    state.matchState.selected = { type, char, el };
+    el.classList.add('selected');
+  } else {
+    // 第二次选择
+    const first = state.matchState.selected;
+
+    if (first.type === type) {
+      // 同类型，切换选择
+      first.el.classList.remove('selected');
+      state.matchState.selected = { type, char, el };
+      el.classList.add('selected');
+      return;
+    }
+
+    if (first.char === char) {
+      // 配对成功！
+      el.classList.add('matched');
+      first.el.classList.add('matched');
+      el.classList.remove('selected');
+      first.el.classList.remove('selected');
+      state.matchState.matched.push(char);
+      SoundManager.playCorrect();
+
+      if (state.matchState.matched.length === state.matchState.pairs.length) {
+        // 全部配对完成
+        setTimeout(() => {
+          showFeedback('🎉', '太棒了！', '全部配对成功！');
+          setTimeout(() => nextExercise(), 1500);
+        }, 500);
+      }
+    } else {
+      // 配对失败
+      el.classList.add('wrong');
+      first.el.classList.add('wrong');
+      SoundManager.playWrong();
+      setTimeout(() => {
+        el.classList.remove('wrong', 'selected');
+        first.el.classList.remove('wrong', 'selected');
+      }, 600);
+    }
+
+    state.matchState.selected = null;
+  }
+}
+
+function renderFillExercise(exercise) {
+  return `
+    <div class="fill-question">
+      <div class="fill-sentence">
+        ${exercise.question.replace('（ ）', '<span class="fill-blank" id="fill-blank">?</span>')}
+      </div>
+    </div>
+    <div class="fill-options">
+      ${exercise.options.map(opt => `
+        <div class="fill-option" onclick="selectFillOption(this, '${opt}', '${exercise.answer}')">${opt}</div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function selectFillOption(el, selected, answer) {
+  const blank = document.getElementById('fill-blank');
+  if (blank.classList.contains('filled')) return;
+
+  SoundManager.playClick();
+  blank.textContent = selected;
+  blank.classList.add('filled');
+
+  if (selected === answer) {
+    el.classList.add('correct');
+    SoundManager.playCorrect();
+    setTimeout(() => {
+      showFeedback('👍', '答对了！', '你真聪明！');
+      setTimeout(() => nextExercise(), 1200);
+    }, 500);
+  } else {
+    el.classList.add('wrong');
+    SoundManager.playWrong();
+    setTimeout(() => {
+      showFeedback('😅', '再想想', `正确答案是"${answer}"`);
+      setTimeout(() => nextExercise(), 1500);
+    }, 500);
+  }
+}
+
+function renderReadExercise(exercise) {
+  const chars = exercise.sentence.split(' ');
+
+  return `
+    <div class="read-card">
+      <div class="read-sentence">
+        ${chars.map((char, i) => {
+          const isHighlight = exercise.highlight && exercise.highlight.includes(char);
+          return `<span class="read-char ${isHighlight ? 'highlight' : ''}" onclick="clickReadChar(this)">${char}</span>`;
+        }).join('')}
+      </div>
+      <div class="read-hint">👆 点击每个字，大声读出来吧！</div>
+      <div class="text-center mt-24">
+        <button class="btn btn-secondary" onclick="completeReadExercise()">✅ 我读完了！</button>
+      </div>
+    </div>
+  `;
+}
+
+function clickReadChar(el) {
+  el.classList.add('clicked');
+  SoundManager.playClick();
+}
+
+function completeReadExercise() {
+  SoundManager.playCorrect();
+  showFeedback('🌟', '读得真好！', '你是个朗读小能手！');
+  setTimeout(() => nextExercise(), 1500);
+}
+
+function nextExercise() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+
+  ProgressManager.markExerciseDone(level.id, week.id, state.currentExerciseIndex, true);
+  state.currentExerciseIndex++;
+  renderPractice();
+}
+
+function skipExercise() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+
+  ProgressManager.markExerciseDone(level.id, week.id, state.currentExerciseIndex, false);
+  state.currentExerciseIndex++;
+  renderPractice();
+}
+
+function showExerciseComplete(level, week, status) {
+  const container = document.getElementById('exercise-container');
+
+  const allExercisesDone = status.exercisesDone.length >= week.exercises.length;
+  const canReadStory = status.learnedChars.length >= week.characters.length;
+
+  container.innerHTML = `
+    <div class="celebration">
+      <div class="celebration-emoji">🎮</div>
+      <div class="celebration-title">练习完成！</div>
+      <div class="celebration-subtitle">你完成了 ${status.exercisesDone.length}/${week.exercises.length} 道练习题</div>
+      <div class="mt-24" style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+        ${canReadStory
+          ? `<button class="btn btn-purple" onclick="navigateTo('story')" style="font-size: 18px; padding: 16px 40px;">📖 读绘本去啦！</button>`
+          : `<p style="color: var(--text-light); font-size: 14px;">💡 学完所有汉字后就可以读绘本啦！</p>`
+        }
+        <button class="btn btn-outline" onclick="navigateTo('learn')">⬅️ 返回学习</button>
+      </div>
+    </div>
+  `;
+
+  SoundManager.playComplete();
+}
+
+// ==========================================
+// 绘本阅读器
+// ==========================================
+function renderStory() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+  if (!week || !week.story) return;
+
+  const status = ProgressManager.getWeekStatus(level.id, week.id);
+
+  // 检查是否解锁
+  if (status.learnedChars.length < week.characters.length) {
+    document.getElementById('story-reader').innerHTML = `
+      <div class="celebration">
+        <div class="celebration-emoji">🔒</div>
+        <div class="celebration-title">绘本还没解锁</div>
+        <div class="celebration-subtitle">学完本周所有汉字后，就可以读绘本啦！<br>已学 ${status.learnedChars.length}/${week.characters.length} 个字</div>
+        <button class="btn btn-primary mt-24" onclick="navigateTo('learn')">⬅️ 去学习</button>
+      </div>
+    `;
+    return;
+  }
+
+  const story = week.story;
+  const totalPages = story.pages.length;
+
+  // 检查是否已读完
+  if (state.currentStoryPage >= totalPages) {
+    // 标记绘本已读
+    const newStatus = ProgressManager.markStoryRead(level.id, week.id);
+
+    document.getElementById('story-reader').innerHTML = `
+      <div class="celebration">
+        <div class="celebration-emoji">🎊</div>
+        <div class="celebration-title">绘本读完啦！</div>
+        <div class="celebration-subtitle">《${story.title}》读完了，你真棒！</div>
+        <div class="celebration-stars">
+          ${[0,1,2].map(i => `<span class="star">⭐</span>`).join('')}
+        </div>
+        ${newStatus.completed ? `
+          <div style="background: linear-gradient(135deg, #FFE0E0, #E0FFE0, #E0E0FF); border-radius: 16px; padding: 20px; margin: 16px 0;">
+            <div style="font-size: 20px; font-weight: 700;">🎉 恭喜通关！</div>
+            <div style="font-size: 14px; color: var(--text-light); margin-top: 4px;">你已经完成了本周所有学习内容！</div>
+          </div>
+        ` : ''}
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button class="btn btn-outline" onclick="state.currentStoryPage=0;renderStory()">🔄 再读一遍</button>
+          <button class="btn btn-primary" onclick="navigateTo('level')">📚 继续学习</button>
+        </div>
+      </div>
+    `;
+
+    SoundManager.playComplete();
+    return;
+  }
+
+  const page = story.pages[state.currentStoryPage];
+
+  document.getElementById('story-reader').innerHTML = `
+    <div class="story-header">
+      <div class="story-title">📖 《${story.title}》</div>
+    </div>
+    <div class="story-page-container">
+      <div class="story-page" style="background: ${page.bg};">
+        <div class="story-illustration">${page.illustration}</div>
+        <div class="story-text">${page.text}</div>
+      </div>
+      <div class="story-page-nav">
+        <button class="btn btn-outline" onclick="prevStoryPage()" ${state.currentStoryPage === 0 ? 'disabled' : ''} style="padding: 8px 16px; font-size: 14px;">⬅️ 上一页</button>
+        <div class="story-page-indicator">${state.currentStoryPage + 1} / ${totalPages}</div>
+        <button class="btn btn-primary" onclick="nextStoryPage()" style="padding: 8px 16px; font-size: 14px;">${state.currentStoryPage === totalPages - 1 ? '✅ 读完了' : '下一页 ➡️'}</button>
+      </div>
+    </div>
+  `;
+}
+
+function prevStoryPage() {
+  if (state.currentStoryPage > 0) {
+    state.currentStoryPage--;
+    renderStory();
+  }
+}
+
+function nextStoryPage() {
+  const level = BOOK_SERIES.find(l => l.id === state.currentLevel);
+  const week = level?.weeks.find(w => w.id === state.currentWeek);
+  state.currentStoryPage++;
+  renderStory();
+}
+
+// ==========================================
+// 反馈弹窗
+// ==========================================
+function showFeedback(emoji, text, sub) {
+  document.getElementById('feedback-emoji').textContent = emoji;
+  document.getElementById('feedback-text').textContent = text;
+  document.getElementById('feedback-sub').textContent = sub;
+  document.getElementById('feedback-overlay').classList.remove('hidden');
+}
+
+function closeFeedback() {
+  document.getElementById('feedback-overlay').classList.add('hidden');
+}
+
+// ==========================================
+// 设置
+// ==========================================
+function toggleSound() {
+  state.soundEnabled = !state.soundEnabled;
+  document.getElementById('toggle-sound').classList.toggle('active', state.soundEnabled);
+  if (state.soundEnabled) SoundManager.playClick();
+}
+
+function resetProgress() {
+  if (confirm('确定要重置所有学习进度吗？这将清除所有学习记录。')) {
+    ProgressManager.resetProgress();
+    state.currentCharIndex = 0;
+    state.currentExerciseIndex = 0;
+    state.currentStoryPage = 0;
+    navigateTo('home');
+    showFeedback('🔄', '已重置', '所有学习进度已清除');
+  }
+}
+
+// ==========================================
+// 初始化
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderHome();
+});
+  </script>
+</body>
+</html>
