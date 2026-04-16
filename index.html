@@ -66717,30 +66717,20 @@ function renderLevel() {
       if (status.learnedChars.length > 0) anyStarted = true;
     });
 
-    const isUnlocked = index === 0 || (() => {
-      const prevWeek = level.weeks[index - 1];
-      if (!prevWeek) return false;
-      let prevDone = true;
-      prevWeek.days.forEach((day, dayIdx) => {
-        if (!ProgressManager.getDayStatus(level.id, prevWeek.id, dayIdx).completed) prevDone = false;
-      });
-      return prevDone;
-    })();
+    const isUnlocked = true;
 
     let cardClass = 'week-card';
     let lockHtml = '';
     if (allDone) cardClass += ' completed';
     else if (anyStarted) cardClass += ' current';
-    else if (isUnlocked) cardClass += ' unlocked';
-    else { cardClass += ' locked'; lockHtml = '<div class="lock-overlay">🔒</div>'; }
+    else cardClass += ' unlocked';
 
     const progress = totalChars > 0 ? Math.round(learnedChars / totalChars * 100) : 0;
     const completedDays = week.days.filter((day, dayIdx) => ProgressManager.getDayStatus(level.id, week.id, dayIdx).completed).length;
     const starsHtml = allDone ? '⭐⭐⭐' : '';
 
     return `
-      <div class="${cardClass}" onclick="${isUnlocked ? `openWeek('${level.id}', '${week.id}')` : ''}">
-        ${lockHtml}
+      <div class="${cardClass}" onclick="openWeek('${level.id}', '${week.id}')">
         <div class="week-card-header">
           <div>
             <div class="week-card-title">${week.name}</div>
@@ -66773,23 +66763,22 @@ function renderWeek() {
   const container = document.getElementById('day-list');
   container.innerHTML = week.days.map((day, dayIdx) => {
     const status = ProgressManager.getDayStatus(state.currentLevel, state.currentWeek, dayIdx);
-    const isUnlocked = dayIdx === 0 || ProgressManager.getDayStatus(state.currentLevel, state.currentWeek, dayIdx - 1).completed;
+    const isUnlocked = true;
 
     let cardClass = 'day-card';
     if (status.completed) cardClass += ' completed';
     else if (status.learnedChars.length > 0) cardClass += ' current';
-    else if (isUnlocked) cardClass += ' unlocked';
-    else cardClass += ' locked';
+    else cardClass += ' unlocked';
 
     const reviewCount = day.reviewChars.length;
     const newCount = day.newChars.length;
 
     return `
-      <div class="${cardClass}" onclick="${isUnlocked ? `openDay('${state.currentLevel}', '${state.currentWeek}', ${dayIdx})` : ''}">
+      <div class="${cardClass}" onclick="openDay('${state.currentLevel}', '${state.currentWeek}', ${dayIdx})">
         <div class="day-card-header">
           <div>
             <div class="day-card-title">${day.dayName} · ${newCount}个新字${reviewCount > 0 ? ` + ${reviewCount}个复习字` : ''}</div>
-            <div class="day-card-info">${status.completed ? '✅ 已完成' : status.learnedChars.length > 0 ? `📖 已学${status.learnedChars.length}字` : isUnlocked ? '🔓 可以开始' : '🔒 未解锁'}</div>
+            <div class="day-card-info">${status.completed ? '✅ 已完成' : status.learnedChars.length > 0 ? `📖 已学${status.learnedChars.length}字` : '🔓 可以开始'}</div>
           </div>
         </div>
         <div class="day-card-chars">
@@ -67373,8 +67362,8 @@ function getFillTemplate(ch) {
         ],
         '一': [
             { question: '选字填空：我吃了（ ）个苹果', options: ['一', '二', '三'] },
-            { question: '选字填空：他考了第（ ）名', options: ['一', '二', '三'] },
             { question: '选字填空：（ ）年有四季', options: ['一', '二', '三'] },
+            { question: '选字填空：（ ）加（ ）等于二', options: ['一', '二', '三'] },
         ],
         '是': [
             { question: '选字填空：他（ ）我的同学', options: ['是', '不是', '也'] },
@@ -68488,7 +68477,6 @@ function renderPractice() {
       <div class="exercise-progress">${dotsHtml}</div>
       <span class="exercise-counter">${state.currentExerciseIndex + 1}/${exercises.length}</span>
       <span class="exercise-type-badge ${exercise.type}">${typeLabel}</span>
-      <div class="exercise-question">${exercise.question}</div>
     </div>
     ${exerciseHtml}
     <div class="text-center mt-24">
