@@ -66567,6 +66567,42 @@ function getAllCharsForDay(levelId, weekId, dayIndex) {
   return [...day.reviewChars, ...day.newChars];
 }
 
+// 获取用户所有已学过的汉字集合
+function getAllLearnedChars() {
+  const learned = new Set();
+  const progress = ProgressManager.getProgress();
+  BOOK_DATA.levels.forEach(level => {
+    level.weeks.forEach(week => {
+      week.days.forEach((day, dayIdx) => {
+        const key = `${level.id}_${week.id}_d${dayIdx}`;
+        const status = progress[key];
+        if (status && status.learnedChars) {
+          status.learnedChars.forEach(charIdx => {
+            const ch = day.newChars[charIdx];
+            if (ch) {
+              const char = typeof ch === 'object' ? ch.char : ch;
+              if (char) learned.add(char);
+            }
+          });
+        }
+      });
+    });
+  });
+  return learned;
+}
+
+// 计算文本中已学字的比例
+function getLearnedRatio(text, learnedChars) {
+  let total = 0, known = 0;
+  for (const ch of text) {
+    if (/[\u4e00-\u9fff]/.test(ch)) {
+      total++;
+      if (learnedChars.has(ch)) known++;
+    }
+  }
+  return total > 0 ? known / total : 0;
+}
+
 // ==========================================
 // 音效管理
 // ==========================================
@@ -68639,6 +68675,15 @@ function renderStory() {
   const story = day.story;
   const totalPages = story.pages.length;
 
+  // 按已学字比例排序绘本页面，优先显示已学字多的页面
+  if (!renderStory._sortedPages || renderStory._dayKey !== `${state.currentLevel}_${state.currentWeek}_${state.currentDay}`) {
+    const learnedChars = getAllLearnedChars();
+    renderStory._sortedPages = story.pages.map((p, i) => ({ ...p, _origIndex: i }))
+      .sort((a, b) => getLearnedRatio(b.text, learnedChars) - getLearnedRatio(a.text, learnedChars));
+    renderStory._dayKey = `${state.currentLevel}_${state.currentWeek}_${state.currentDay}`;
+  }
+  const sortedPages = renderStory._sortedPages;
+
   if (state.currentStoryPage >= totalPages) {
     const newStatus = ProgressManager.markStoryRead(state.currentLevel, state.currentWeek, state.currentDay);
     document.getElementById('story-reader').innerHTML = `
@@ -68653,7 +68698,7 @@ function renderStory() {
             <div style="font-size: 14px; color: var(--text-light); margin-top: 4px;">你已经完成了今天所有学习内容！</div>
           </div>` : ''}
         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-          <button class="btn btn-outline" onclick="state.currentStoryPage=0;renderStory()">🔄 再读一遍</button>
+          <button class="btn btn-outline" onclick="renderStory._sortedPages=null;state.currentStoryPage=0;renderStory()">🔄 再读一遍</button>
           <button class="btn btn-primary" onclick="navigateTo('week')">📚 继续学习</button>
         </div>
       </div>`;
@@ -68661,7 +68706,7 @@ function renderStory() {
     return;
   }
 
-  const page = story.pages[state.currentStoryPage];
+  const page = sortedPages[state.currentStoryPage];
   document.getElementById('story-reader').innerHTML = `
     <div class="story-header">
       <div class="story-title">📖 《${story.title}》</div>
