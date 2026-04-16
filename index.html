@@ -188,14 +188,14 @@ body::before {
 .learn-nav-item.review-tag { background: var(--blue-light); border-color: var(--blue); color: #2563EB; font-size: 11px; }
 
 /* 汉字卡片 */
-.char-card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; text-align: center; box-shadow: var(--shadow-lg); animation: bounceIn 0.5s ease; }
-.char-display { font-size: 100px; font-weight: 900; color: var(--primary); line-height: 1.2; margin: 12px 0; text-shadow: 3px 3px 0 rgba(255,107,107,0.1); cursor: pointer; transition: var(--transition); }
+.char-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow-lg); animation: bounceIn 0.5s ease; }
+.char-display { font-size: 80px; font-weight: 900; color: var(--primary); line-height: 1.1; margin: 6px 0; text-shadow: 3px 3px 0 rgba(255,107,107,0.1); cursor: pointer; transition: var(--transition); }
 .char-display:hover { transform: scale(1.05); }
 .char-display.review-char { color: var(--blue); }
-.char-pinyin { font-size: 28px; color: var(--secondary); font-weight: 600; margin-bottom: 8px; }
-.char-meaning { font-size: 18px; color: var(--text-light); margin-bottom: 16px; }
-.char-words { display: flex; justify-content: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-.char-word-tag { padding: 6px 16px; border-radius: 20px; background: var(--purple-light); color: var(--purple); font-size: 16px; font-weight: 600; }
+.char-pinyin { font-size: 24px; color: var(--secondary); font-weight: 600; margin-bottom: 4px; }
+.char-meaning { font-size: 16px; color: var(--text-light); margin-bottom: 8px; }
+.char-words { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.char-word-tag { padding: 4px 12px; border-radius: 20px; background: var(--purple-light); color: var(--purple); font-size: 14px; font-weight: 600; }
 .char-stroke-hint { background: var(--orange-light); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px; font-size: 15px; color: #9A4E00; line-height: 1.6; }
 .char-stroke-hint::before { content: '✏️ 怎么记这个字：'; display: block; font-weight: 700; margin-bottom: 8px; font-size: 16px; }
 
@@ -212,14 +212,14 @@ body::before {
 .pictograph-arrow { font-size: 20px; color: #FFB74D; }
 .pictograph-hint { margin-top: 8px; font-size: 13px; color: #795548; line-height: 1.5; background: rgba(255,255,255,0.6); padding: 8px; border-radius: 8px; }
 
-.char-sentence { background: var(--blue-light); border-radius: var(--radius-sm); padding: 16px; margin-top: 12px; font-size: 18px; color: #1E40AF; line-height: 1.6; }
-.char-sentence::before { content: '📖 例句：'; display: block; font-weight: 700; margin-bottom: 8px; font-size: 14px; color: var(--text-light); }
+.char-sentence { background: var(--blue-light); border-radius: var(--radius-sm); padding: 10px; margin-top: 8px; font-size: 16px; color: #1E40AF; line-height: 1.5; }
+.char-sentence::before { content: '📖 例句：'; display: block; font-weight: 700; margin-bottom: 4px; font-size: 12px; color: var(--text-light); }
 
-.char-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+.char-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
 .char-badge.new-badge { background: var(--primary-light); color: var(--primary); }
 .char-badge.review-badge { background: var(--blue-light); color: var(--blue); }
 
-.learn-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 8px; }
+.learn-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 8px; }
 
 .btn { padding: 10px 20px; border-radius: 50px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
 .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
@@ -234,8 +234,8 @@ body::before {
 
 /* 练习页 */
 .exercise-container { animation: slideUp 0.4s ease; }
-.exercise-header { text-align: center; margin-bottom: 24px; }
-.exercise-progress { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
+.exercise-header { text-align: center; margin-bottom: 12px; }
+.exercise-progress { display: flex; justify-content: center; gap: 6px; margin-bottom: 8px; }
 .exercise-dot { width: 12px; height: 12px; border-radius: 50%; background: #E0E0E0; transition: var(--transition); }
 .exercise-dot.active { background: var(--primary); transform: scale(1.3); }
 .exercise-dot.correct { background: var(--green); }
@@ -244,31 +244,31 @@ body::before {
 .exercise-type-badge.read { background: var(--green-light); color: #059669; }
 .exercise-question { font-size: 22px; font-weight: 700; margin: 12px 0; }
 
-.fill-question { background: var(--card-bg); border-radius: var(--radius); padding: 30px; text-align: center; box-shadow: var(--shadow); margin-bottom: 24px; }
-.fill-sentence { font-size: 32px; font-weight: 700; line-height: 1.8; margin: 16px 0; }
-.fill-blank { display: inline-block; min-width: 60px; border-bottom: 4px dashed var(--primary); color: var(--primary); padding: 0 8px; transition: var(--transition); }
+.fill-question { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); margin-bottom: 12px; }
+.fill-sentence { font-size: 24px; font-weight: 700; line-height: 1.6; margin: 8px 0; }
+.fill-blank { display: inline-block; min-width: 50px; border-bottom: 3px dashed var(--primary); color: var(--primary); padding: 0 6px; transition: var(--transition); }
 .fill-blank.filled { border-bottom-style: solid; animation: bounceIn 0.3s ease; }
-.fill-options { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
-.fill-option { width: 80px; height: 80px; border-radius: var(--radius-sm); border: 3px solid #E0E0E0; background: var(--card-bg); font-size: 36px; font-weight: 900; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+.fill-options { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.fill-option { width: 64px; height: 64px; border-radius: var(--radius-sm); border: 3px solid #E0E0E0; background: var(--card-bg); font-size: 30px; font-weight: 900; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
 .fill-option:hover { border-color: var(--blue); transform: scale(1.1); }
 .fill-option.correct { border-color: var(--green); background: var(--green-light); animation: bounceIn 0.3s ease; }
 .fill-option.wrong { border-color: var(--primary); background: var(--primary-light); animation: shake 0.5s ease; }
 
 /* 选择题卡片（看字选拼音/看拼音选字） */
-.quiz-card { background: var(--card-bg); border-radius: var(--radius); padding: 30px; text-align: center; box-shadow: var(--shadow); margin-bottom: 24px; }
-.quiz-display { font-size: 72px; font-weight: 900; color: var(--text-dark); margin: 20px 0; line-height: 1.2; }
-.quiz-display.quiz-pinyin { font-size: 48px; color: var(--primary); font-weight: 700; }
-.quiz-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 320px; margin: 0 auto; }
-.quiz-option { padding: 20px; border-radius: var(--radius-sm); border: 3px solid #E0E0E0; background: var(--card-bg); font-size: 32px; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; min-height: 70px; }
+.quiz-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); margin-bottom: 12px; }
+.quiz-display { font-size: 56px; font-weight: 900; color: var(--text-dark); margin: 10px 0; line-height: 1.1; }
+.quiz-display.quiz-pinyin { font-size: 36px; color: var(--primary); font-weight: 700; }
+.quiz-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 280px; margin: 0 auto; }
+.quiz-option { padding: 14px; border-radius: var(--radius-sm); border: 3px solid #E0E0E0; background: var(--card-bg); font-size: 26px; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; min-height: 56px; }
 .quiz-option:hover { border-color: var(--blue); transform: scale(1.05); }
 .quiz-option.correct { border-color: var(--green); background: var(--green-light); animation: bounceIn 0.3s ease; }
 .quiz-option.wrong { border-color: var(--primary); background: var(--primary-light); animation: shake 0.5s ease; }
-.exercise-counter { font-size: 14px; color: var(--text-light); margin-bottom: 8px; }
+.exercise-counter { font-size: 13px; color: var(--text-light); margin-bottom: 4px; }
 .exercise-type-badge.char_to_pinyin { background: #FFF3E0; color: #E65100; }
 .exercise-type-badge.pinyin_to_char { background: #E8F5E9; color: #2E7D32; }
 
-.read-card { background: var(--card-bg); border-radius: var(--radius); padding: 30px; text-align: center; box-shadow: var(--shadow); }
-.read-sentence { font-size: 36px; font-weight: 700; line-height: 2; margin: 20px 0; }
+.read-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); }
+.read-sentence { font-size: 28px; font-weight: 700; line-height: 1.8; margin: 10px 0; }
 .read-char { display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 8px; cursor: pointer; transition: var(--transition); }
 .read-char:hover { background: var(--accent); transform: scale(1.1); }
 .read-char.highlight { background: var(--primary-light); color: var(--primary); }
@@ -325,22 +325,27 @@ body::before {
 
 /* 响应式 */
 @media (max-width: 600px) {
-  .app-container { padding: 12px; padding-bottom: 80px; }
-  .home-title { font-size: 26px; }
-  .char-display { font-size: 72px; }
-  .read-sentence { font-size: 28px; }
-  .story-text { font-size: 24px; }
-  .fill-sentence { font-size: 26px; }
-  .fill-option { width: 64px; height: 64px; font-size: 28px; }
+  .app-container { padding: 8px; padding-bottom: 70px; }
+  .home-title { font-size: 24px; }
+  .char-display { font-size: 64px; }
+  .char-pinyin { font-size: 20px; }
+  .char-meaning { font-size: 14px; }
+  .char-word-tag { font-size: 12px; padding: 3px 8px; }
+  .char-sentence { font-size: 14px; padding: 8px; }
+  .char-card { padding: 12px; }
+  .read-sentence { font-size: 24px; }
+  .story-text { font-size: 22px; }
+  .fill-sentence { font-size: 20px; }
+  .fill-option { width: 56px; height: 56px; font-size: 26px; }
+  .quiz-display { font-size: 48px; }
+  .quiz-display.quiz-pinyin { font-size: 30px; }
+  .quiz-option { font-size: 22px; padding: 10px; min-height: 48px; }
   .progress-card { flex-direction: column; text-align: center; }
-  .learn-nav { gap: 4px; padding: 8px; }
-  .learn-nav-item { padding: 4px 8px; font-size: 12px; }
-  .pictograph-section { padding: 12px; }
-  .pictograph-char { font-size: 32px; }
-  .pictograph-title { font-size: 12px; }
-  .pictograph-hint { font-size: 12px; }
-  .pictograph-arrow { font-size: 16px; }
-  .pictograph-label { font-size: 9px; }
+  .learn-nav { gap: 3px; padding: 6px; }
+  .learn-nav-item { padding: 3px 6px; font-size: 11px; }
+  .btn { padding: 8px 14px; font-size: 13px; }
+  .page-header { padding: 8px 0; }
+  .page-title { font-size: 16px; }
 }
 @media (min-width: 601px) { .app-container { padding-bottom: 80px; } }
 
@@ -67011,26 +67016,6 @@ function renderCharCard() {
       <div class="char-meaning">${char.meaning}</div>
       <div class="char-words">
         ${char.words.map(w => `<span class="char-word-tag">${w}</span>`).join('')}
-      </div>
-      <div class="pictograph-section">
-        <div class="pictograph-title">🖼️ 字形演变 · 帮你记住这个字</div>
-        <div class="pictograph-evolution">
-          <div class="pictograph-stage">
-            <div class="pictograph-char oracle">${getPictograph(char.char).oracle}</div>
-            <div class="pictograph-label">象形</div>
-          </div>
-          <div class="pictograph-arrow">→</div>
-          <div class="pictograph-stage">
-            <div class="pictograph-char seal">${getPictograph(char.char).seal}</div>
-            <div class="pictograph-label">篆书</div>
-          </div>
-          <div class="pictograph-arrow">→</div>
-          <div class="pictograph-stage">
-            <div class="pictograph-char modern">${char.char}</div>
-            <div class="pictograph-label">楷书</div>
-          </div>
-        </div>
-        <div class="pictograph-hint">💡 ${getPictograph(char.char).hint}</div>
       </div>
       <div class="char-sentence">${char.sentence}</div>
     </div>`;
