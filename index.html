@@ -1,494 +1,3 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>趣味识字乐园 - 分级阅读（1000字）</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
-  <style>
-/* ==========================================
-   分级识字阅读网站 - 全局样式
-   ========================================== */
-
-:root {
-  --primary: #FF6B6B;
-  --primary-light: #FFE0E0;
-  --secondary: #4ECDC4;
-  --secondary-light: #D4F5F2;
-  --accent: #FFE66D;
-  --accent-dark: #FFD93D;
-  --purple: #A78BFA;
-  --purple-light: #EDE9FE;
-  --blue: #60A5FA;
-  --blue-light: #DBEAFE;
-  --green: #34D399;
-  --green-light: #D1FAE5;
-  --orange: #FB923C;
-  --orange-light: #FED7AA;
-  --pink: #F472B6;
-  --pink-light: #FCE7F3;
-  --bg: #FFF9F0;
-  --card-bg: #FFFFFF;
-  --text: #2D3436;
-  --text-light: #636E72;
-  --shadow: 0 4px 15px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
-  --radius: 20px;
-  --radius-sm: 12px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background:
-    radial-gradient(circle at 10% 20%, rgba(255,107,107,0.08) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(78,205,196,0.08) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(255,230,109,0.05) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.app-container {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  min-height: 100vh;
-}
-
-.page { display: none; animation: fadeIn 0.4s ease; }
-.page.active { display: block; }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); } 20%, 40%, 60%, 80% { transform: translateX(5px); } }
-@keyframes starPop { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 60% { transform: scale(1.3) rotate(10deg); } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
-@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-
-/* 首页 */
-.home-header { text-align: center; padding: 16px 0 12px; }
-.home-logo { font-size: 48px; margin-bottom: 6px; animation: float 3s ease-in-out infinite; }
-.home-title { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--purple), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; }
-.home-subtitle { font-size: 14px; color: var(--text-light); }
-
-.progress-card {
-  background: var(--card-bg); border-radius: var(--radius); padding: 16px; margin: 12px 0;
-  box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px;
-}
-.progress-icon { font-size: 36px; animation: pulse 2s ease-in-out infinite; }
-.progress-info { flex: 1; }
-.progress-label { font-size: 14px; color: var(--text-light); margin-bottom: 8px; }
-.progress-bar-container { width: 100%; height: 16px; background: #F0F0F0; border-radius: 8px; overflow: hidden; }
-.progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent), var(--green)); border-radius: 8px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
-.progress-bar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite; }
-.progress-stats { display: flex; gap: 16px; margin-top: 8px; font-size: 13px; color: var(--text-light); }
-.progress-stats span { display: flex; align-items: center; gap: 4px; }
-
-.level-section { margin: 16px 0; }
-.section-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-
-.level-card {
-  background: var(--card-bg); border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
-  box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); border: 3px solid transparent; position: relative; overflow: hidden;
-}
-.level-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-.level-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
-.level-card[data-level="level1"]::before { background: linear-gradient(90deg, var(--primary), var(--accent)); }
-.level-card[data-level="level2"]::before { background: linear-gradient(90deg, var(--secondary), var(--blue)); }
-.level-card[data-level="level3"]::before { background: linear-gradient(90deg, var(--green), var(--secondary)); }
-.level-card[data-level="level4"]::before { background: linear-gradient(90deg, var(--purple), var(--pink)); }
-.level-card[data-level="level5"]::before { background: linear-gradient(90deg, var(--orange), var(--primary)); }
-
-.level-card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
-.level-icon { font-size: 40px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 16px; }
-.level-card[data-level="level1"] .level-icon { background: var(--primary-light); }
-.level-card[data-level="level2"] .level-icon { background: var(--secondary-light); }
-.level-card[data-level="level3"] .level-icon { background: var(--green-light); }
-.level-card[data-level="level4"] .level-icon { background: var(--purple-light); }
-.level-card[data-level="level5"] .level-icon { background: var(--orange-light); }
-.level-name { font-size: 20px; font-weight: 700; }
-.level-desc { font-size: 14px; color: var(--text-light); margin-top: 4px; }
-
-.level-weeks { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.week-badge { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 20px; font-size: 13px; background: #F5F5F5; transition: var(--transition); }
-.week-badge.completed { background: var(--green-light); color: #059669; }
-.week-badge.in-progress { background: var(--accent); color: #92400E; }
-
-/* 级别详情页 */
-.page-header { display: flex; align-items: center; gap: 12px; padding: 16px 0; margin-bottom: 20px; }
-.back-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--card-bg); box-shadow: var(--shadow); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
-.back-btn:hover { transform: scale(1.1); box-shadow: var(--shadow-lg); }
-.page-title { font-size: 24px; font-weight: 700; }
-
-/* 周卡片 */
-.week-card {
-  background: var(--card-bg); border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
-  box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); border-left: 5px solid #E0E0E0; position: relative;
-}
-.week-card:hover { transform: translateX(4px); box-shadow: var(--shadow-lg); }
-.week-card.unlocked { border-left-color: var(--green); }
-.week-card.current { border-left-color: var(--accent-dark); }
-.week-card.locked { opacity: 0.6; cursor: not-allowed; }
-.week-card.completed { border-left-color: var(--secondary); }
-.week-card-header { display: flex; align-items: center; justify-content: space-between; }
-.week-card-title { font-size: 18px; font-weight: 600; }
-.week-card-theme { font-size: 13px; color: var(--text-light); margin-top: 4px; }
-.week-card-stars { font-size: 20px; }
-.week-card-progress { margin-top: 12px; display: flex; gap: 8px; align-items: center; }
-.week-progress-bar { flex: 1; height: 8px; background: #F0F0F0; border-radius: 4px; overflow: hidden; }
-.week-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--green), var(--secondary)); transition: width 0.5s ease; }
-.week-progress-text { font-size: 12px; color: var(--text-light); white-space: nowrap; }
-.lock-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.5); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 32px; }
-
-/* 天卡片 */
-.day-card {
-  background: var(--card-bg); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px;
-  box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); border-left: 4px solid #E0E0E0;
-}
-.day-card:hover { transform: translateX(4px); box-shadow: var(--shadow-lg); }
-.day-card.unlocked { border-left-color: var(--green); }
-.day-card.current { border-left-color: var(--accent-dark); }
-.day-card.locked { opacity: 0.5; cursor: not-allowed; }
-.day-card.completed { border-left-color: var(--secondary); }
-.day-card-header { display: flex; align-items: center; justify-content: space-between; }
-.day-card-title { font-size: 16px; font-weight: 600; }
-.day-card-info { font-size: 12px; color: var(--text-light); margin-top: 4px; }
-.day-card-chars { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-.day-char-tag { padding: 4px 10px; border-radius: 12px; font-size: 14px; font-weight: 700; background: #F5F5F5; }
-.day-char-tag.learned { background: var(--green-light); color: #059669; }
-.day-char-tag.review { background: var(--blue-light); color: #2563EB; }
-
-/* 学习页 */
-.learn-nav {
-  display: flex; justify-content: center; gap: 4px; padding: 8px; background: var(--card-bg);
-  border-radius: var(--radius); margin-bottom: 12px; box-shadow: var(--shadow); flex-wrap: wrap;
-}
-.learn-nav-item {
-  padding: 4px 10px; border-radius: 16px; border: 2px solid #E0E0E0; background: transparent;
-  font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); color: var(--text-light);
-}
-.learn-nav-item.active { background: var(--primary); border-color: var(--primary); color: white; }
-.learn-nav-item.completed { background: var(--green-light); border-color: var(--green); color: #059669; }
-.learn-nav-item.review-tag { background: var(--blue-light); border-color: var(--blue); color: #2563EB; font-size: 11px; }
-
-/* 汉字卡片 */
-.char-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow-lg); animation: bounceIn 0.5s ease; }
-.char-display { font-size: 80px; font-weight: 900; color: var(--primary); line-height: 1.1; margin: 6px 0; text-shadow: 3px 3px 0 rgba(255,107,107,0.1); cursor: pointer; transition: var(--transition); }
-.char-display:hover { transform: scale(1.05); }
-.char-display.review-char { color: var(--blue); }
-.char-pinyin { font-size: 24px; color: var(--secondary); font-weight: 600; margin-bottom: 4px; }
-.char-meaning { font-size: 16px; color: var(--text-light); margin-bottom: 8px; }
-.char-words { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-.char-word-tag { padding: 4px 12px; border-radius: 20px; background: var(--purple-light); color: var(--purple); font-size: 14px; font-weight: 600; }
-.char-stroke-hint { background: var(--orange-light); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px; font-size: 15px; color: #9A4E00; line-height: 1.6; }
-.char-stroke-hint::before { content: '✏️ 怎么记这个字：'; display: block; font-weight: 700; margin-bottom: 8px; font-size: 16px; }
-
-/* 象形字演变区域 */
-.pictograph-section { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border-radius: var(--radius-sm); padding: 14px; margin-top: 12px; text-align: center; }
-.pictograph-title { font-size: 13px; font-weight: 700; color: #F57C00; margin-bottom: 8px; }
-.pictograph-evolution { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
-.pictograph-stage { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.pictograph-char { font-size: 40px; line-height: 1.2; font-family: 'STLiti', 'KaiTi', 'SimSun', serif; }
-.pictograph-char.oracle { font-family: 'STLiti', 'KaiTi', serif; color: #8B4513; }
-.pictograph-char.seal { font-family: 'STFangsong', 'FangSong', serif; color: #A0522D; }
-.pictograph-char.modern { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; color: #2D3436; font-weight: 900; }
-.pictograph-label { font-size: 11px; color: #9E9E9E; }
-.pictograph-arrow { font-size: 20px; color: #FFB74D; }
-.pictograph-hint { margin-top: 8px; font-size: 13px; color: #795548; line-height: 1.5; background: rgba(255,255,255,0.6); padding: 8px; border-radius: 8px; }
-
-.char-sentence { background: var(--blue-light); border-radius: var(--radius-sm); padding: 10px; margin-top: 8px; font-size: 16px; color: #1E40AF; line-height: 1.5; }
-.char-sentence::before { content: '📖 例句：'; display: block; font-weight: 700; margin-bottom: 4px; font-size: 12px; color: var(--text-light); }
-
-.char-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
-.char-badge.new-badge { background: var(--primary-light); color: var(--primary); }
-.char-badge.review-badge { background: var(--blue-light); color: var(--blue); }
-
-.learn-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 8px; }
-
-.btn { padding: 10px 20px; border-radius: 50px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
-.btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.btn:active { transform: translateY(0); }
-.btn-primary { background: linear-gradient(135deg, var(--primary), #FF8E8E); color: white; }
-.btn-secondary { background: linear-gradient(135deg, var(--secondary), #7EDDD6); color: white; }
-.btn-accent { background: linear-gradient(135deg, var(--accent-dark), var(--accent)); color: #78350F; }
-.btn-purple { background: linear-gradient(135deg, var(--purple), #C4B5FD); color: white; }
-.btn-blue { background: linear-gradient(135deg, var(--blue), #93C5FD); color: white; }
-.btn-outline { background: transparent; border: 2px solid #E0E0E0; color: var(--text); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-/* 练习页 */
-.exercise-container { animation: slideUp 0.4s ease; }
-.exercise-header { text-align: center; margin-bottom: 12px; }
-.exercise-progress { display: flex; justify-content: center; gap: 6px; margin-bottom: 8px; }
-.exercise-dot { width: 12px; height: 12px; border-radius: 50%; background: #E0E0E0; transition: var(--transition); }
-.exercise-dot.active { background: var(--primary); transform: scale(1.3); }
-.exercise-dot.correct { background: var(--green); }
-.exercise-type-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
-.exercise-type-badge.fill { background: var(--blue-light); color: var(--blue); }
-.exercise-type-badge.read { background: var(--green-light); color: #059669; }
-.exercise-question { font-size: 22px; font-weight: 700; margin: 12px 0; }
-
-.fill-question { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); margin-bottom: 12px; }
-.fill-sentence { font-size: 24px; font-weight: 700; line-height: 1.6; margin: 8px 0; }
-.fill-blank { display: inline-block; min-width: 50px; border-bottom: 3px dashed var(--primary); color: var(--primary); padding: 0 6px; transition: var(--transition); }
-.fill-blank.filled { border-bottom-style: solid; animation: bounceIn 0.3s ease; }
-.fill-options { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-.fill-option { width: 64px; height: 64px; border-radius: var(--radius-sm); border: 3px solid #E0E0E0; background: var(--card-bg); font-size: 30px; font-weight: 900; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
-.fill-option:hover { border-color: var(--blue); transform: scale(1.1); }
-.fill-option.correct { border-color: var(--green); background: var(--green-light); animation: bounceIn 0.3s ease; }
-.fill-option.wrong { border-color: var(--primary); background: var(--primary-light); animation: shake 0.5s ease; }
-
-/* 选择题卡片（看字选拼音/看拼音选字） */
-.quiz-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); margin-bottom: 12px; }
-.quiz-display { font-size: 56px; font-weight: 900; color: var(--text-dark); margin: 10px 0; line-height: 1.1; }
-.quiz-display.quiz-pinyin { font-size: 36px; color: var(--primary); font-weight: 700; }
-.quiz-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 280px; margin: 0 auto; }
-.quiz-option { padding: 14px; border-radius: var(--radius-sm); border: 3px solid #E0E0E0; background: var(--card-bg); font-size: 26px; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; min-height: 56px; }
-.quiz-option:hover { border-color: var(--blue); transform: scale(1.05); }
-.quiz-option.correct { border-color: var(--green); background: var(--green-light); animation: bounceIn 0.3s ease; }
-.quiz-option.wrong { border-color: var(--primary); background: var(--primary-light); animation: shake 0.5s ease; }
-.exercise-counter { font-size: 13px; color: var(--text-light); margin-bottom: 4px; }
-.exercise-type-badge.char_to_pinyin { background: #FFF3E0; color: #E65100; }
-.exercise-type-badge.pinyin_to_char { background: #E8F5E9; color: #2E7D32; }
-
-.read-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); }
-.read-sentence { font-size: 28px; font-weight: 700; line-height: 1.8; margin: 10px 0; }
-.read-char { display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 8px; cursor: pointer; transition: var(--transition); }
-.read-char:hover { background: var(--accent); transform: scale(1.1); }
-.read-char.highlight { background: var(--primary-light); color: var(--primary); }
-.read-char.clicked { background: var(--green-light); color: #059669; animation: bounceIn 0.3s ease; }
-.read-hint { font-size: 14px; color: var(--text-light); margin-top: 16px; }
-
-/* 绘本阅读器 */
-.story-reader { animation: slideUp 0.4s ease; }
-.story-header { text-align: center; margin-bottom: 16px; }
-.story-title { font-size: 24px; font-weight: 800; color: var(--primary); }
-.story-page-container { position: relative; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); min-height: 200px; display: flex; flex-direction: column; }
-.story-page { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; text-align: center; animation: fadeIn 0.5s ease; }
-.story-text { font-size: 26px; font-weight: 700; line-height: 2.2; letter-spacing: 3px; }
-.story-review-label { font-size: 14px; color: var(--blue); font-weight: 600; margin-bottom: 8px; padding: 4px 12px; background: var(--blue-light); border-radius: 12px; }
-.story-new-label { font-size: 14px; color: var(--primary); font-weight: 600; margin-bottom: 8px; padding: 4px 12px; background: var(--primary-light); border-radius: 12px; }
-.story-page-nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border-top: 1px solid #F0F0F0; }
-
-/* 完成庆祝 */
-.celebration { text-align: center; padding: 40px 20px; animation: bounceIn 0.6s ease; }
-.celebration-emoji { font-size: 80px; margin-bottom: 16px; animation: float 2s ease-in-out infinite; }
-.celebration-title { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
-.celebration-subtitle { font-size: 16px; color: var(--text-light); margin-bottom: 24px; }
-.celebration-stars { font-size: 48px; margin-bottom: 24px; }
-.celebration-stars .star { display: inline-block; animation: starPop 0.5s ease forwards; opacity: 0; }
-.celebration-stars .star:nth-child(1) { animation-delay: 0.2s; }
-.celebration-stars .star:nth-child(2) { animation-delay: 0.5s; }
-.celebration-stars .star:nth-child(3) { animation-delay: 0.8s; }
-
-/* 反馈弹窗 */
-.feedback-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease; }
-.feedback-popup { background: var(--card-bg); border-radius: var(--radius); padding: 40px; text-align: center; box-shadow: var(--shadow-lg); animation: bounceIn 0.4s ease; max-width: 320px; width: 90%; }
-.feedback-emoji { font-size: 64px; margin-bottom: 16px; }
-.feedback-text { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-.feedback-sub { font-size: 14px; color: var(--text-light); }
-
-/* 设置页 */
-.settings-section { background: var(--card-bg); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow); }
-.settings-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-.settings-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F5F5F5; }
-.settings-item:last-child { border-bottom: none; }
-.settings-label { font-size: 15px; }
-.settings-desc { font-size: 13px; color: var(--text-light); margin-top: 2px; }
-.toggle { width: 52px; height: 28px; border-radius: 14px; background: #E0E0E0; position: relative; cursor: pointer; transition: var(--transition); }
-.toggle.active { background: var(--green); }
-.toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 50%; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: var(--transition); }
-.toggle.active::after { left: 26px; }
-
-/* 底部导航 */
-.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-around; padding: 8px 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); z-index: 100; }
-.nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 16px; border-radius: 12px; cursor: pointer; transition: var(--transition); border: none; background: transparent; font-size: 12px; color: var(--text-light); }
-.nav-item.active { color: var(--primary); }
-.nav-item-icon { font-size: 24px; }
-.nav-item-label { font-weight: 600; }
-
-/* 响应式 */
-@media (max-width: 600px) {
-  .app-container { padding: 8px; padding-bottom: 70px; }
-  .home-title { font-size: 24px; }
-  .char-display { font-size: 64px; }
-  .char-pinyin { font-size: 20px; }
-  .char-meaning { font-size: 14px; }
-  .char-word-tag { font-size: 12px; padding: 3px 8px; }
-  .char-sentence { font-size: 14px; padding: 8px; }
-  .char-card { padding: 12px; }
-  .read-sentence { font-size: 24px; }
-  .story-text { font-size: 22px; }
-  .fill-sentence { font-size: 20px; }
-  .fill-option { width: 56px; height: 56px; font-size: 26px; }
-  .quiz-display { font-size: 48px; }
-  .quiz-display.quiz-pinyin { font-size: 30px; }
-  .quiz-option { font-size: 22px; padding: 10px; min-height: 48px; }
-  .progress-card { flex-direction: column; text-align: center; }
-  .learn-nav { gap: 3px; padding: 6px; }
-  .learn-nav-item { padding: 3px 6px; font-size: 11px; }
-  .btn { padding: 8px 14px; font-size: 13px; }
-  .page-header { padding: 8px 0; }
-  .page-title { font-size: 16px; }
-}
-@media (min-width: 601px) { .app-container { padding-bottom: 80px; } }
-
-.text-center { text-align: center; }
-.mt-16 { margin-top: 16px; }
-.mt-24 { margin-top: 24px; }
-.mb-16 { margin-bottom: 16px; }
-.hidden { display: none !important; }
-  ruby { position: relative; display: inline-block; }
-  ruby rt { position: absolute; top: -1.2em; left: 50%; transform: translateX(-50%); font-size: 0.45em; color: var(--primary); font-weight: 500; white-space: nowrap; pointer-events: none; }
-  </style>
-</head>
-<body>
-  <div class="app-container" id="app">
-
-    <!-- 首页 -->
-    <div class="page active" id="page-home">
-      <div class="home-header">
-        <div class="home-logo">📚</div>
-        <h1 class="home-title">趣味识字乐园</h1>
-        <p class="home-subtitle">每天学7个字，轻松认1000字！每周50字，绘本天天复习</p>
-      </div>
-      <div class="progress-card" id="home-progress">
-        <div class="progress-icon">🏆</div>
-        <div class="progress-info">
-          <div class="progress-label">学习进度</div>
-          <div class="progress-bar-container">
-            <div class="progress-bar" id="home-progress-bar" style="width: 0%"></div>
-          </div>
-          <div class="progress-stats">
-            <span>📖 <span id="stat-weeks">0/20</span> 周</span>
-            <span>📝 <span id="stat-chars">0/1000</span> 字</span>
-            <span>⭐ <span id="stat-stars">0</span> 星</span>
-          </div>
-        </div>
-      </div>
-      <div id="level-list"></div>
-    </div>
-
-    <!-- 级别详情页 -->
-    <div class="page" id="page-level">
-      <div class="page-header">
-        <button class="back-btn" onclick="navigateTo('home')">←</button>
-        <h2 class="page-title" id="level-title"></h2>
-      </div>
-      <div id="week-list"></div>
-    </div>
-
-    <!-- 周详情页（含天列表） -->
-    <div class="page" id="page-week">
-      <div class="page-header">
-        <button class="back-btn" onclick="navigateTo('level')">←</button>
-        <h2 class="page-title" id="week-title"></h2>
-      </div>
-      <div id="day-list"></div>
-    </div>
-
-    <!-- 学习页 -->
-    <div class="page" id="page-learn">
-      <div class="page-header">
-        <button class="back-btn" onclick="navigateTo('week')">←</button>
-        <h2 class="page-title" id="learn-title"></h2>
-      </div>
-      <div class="learn-nav" id="learn-nav"></div>
-      <div id="char-card-container"></div>
-      <div class="learn-actions" id="learn-actions"></div>
-    </div>
-
-    <!-- 练习页 -->
-    <div class="page" id="page-practice">
-      <div class="page-header">
-        <button class="back-btn" onclick="navigateTo('learn')">←</button>
-        <h2 class="page-title">互动练习</h2>
-      </div>
-      <div class="exercise-container" id="exercise-container"></div>
-    </div>
-
-    <!-- 绘本阅读页 -->
-    <div class="page" id="page-story">
-      <div class="page-header">
-        <button class="back-btn" onclick="navigateTo('practice')">←</button>
-        <h2 class="page-title">📖 绘本时间</h2>
-      </div>
-      <div class="story-reader" id="story-reader"></div>
-    </div>
-
-    <!-- 完成庆祝页 -->
-    <div class="page" id="page-complete">
-      <div class="celebration" id="celebration-content"></div>
-    </div>
-
-    <!-- 设置页 -->
-    <div class="page" id="page-settings">
-      <div class="page-header">
-        <button class="back-btn" onclick="navigateTo('home')">←</button>
-        <h2 class="page-title">设置</h2>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">🔊 音效</div>
-        <div class="settings-item">
-          <div><div class="settings-label">音效</div><div class="settings-desc">答题正确/错误时播放音效</div></div>
-          <div class="toggle active" id="toggle-sound" onclick="toggleSound()"></div>
-        </div>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">📊 学习数据</div>
-        <div class="settings-item">
-          <div><div class="settings-label">重置学习进度</div><div class="settings-desc">清除所有学习记录，重新开始</div></div>
-          <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="resetProgress()">重置</button>
-        </div>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">ℹ️ 关于</div>
-        <div class="settings-item">
-          <div><div class="settings-label">趣味识字乐园 v2.0</div><div class="settings-desc">1000字分级识字阅读 · 每周50字 · 每日绘本复习</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 反馈弹窗 -->
-    <div class="feedback-overlay hidden" id="feedback-overlay" onclick="closeFeedback()">
-      <div class="feedback-popup" id="feedback-popup">
-        <div class="feedback-emoji" id="feedback-emoji"></div>
-        <div class="feedback-text" id="feedback-text"></div>
-        <div class="feedback-sub" id="feedback-sub"></div>
-      </div>
-    </div>
-
-    <!-- 底部导航 -->
-    <div class="bottom-nav">
-      <button class="nav-item active" onclick="navigateTo('home')" data-nav="home">
-        <span class="nav-item-icon">🏠</span><span class="nav-item-label">首页</span>
-      </button>
-      <button class="nav-item" onclick="navigateTo('settings')" data-nav="settings">
-        <span class="nav-item-icon">⚙️</span><span class="nav-item-label">设置</span>
-      </button>
-    </div>
-  </div>
-
-  <script>
-// ==========================================
-// 字库数据（由Python脚本生成）
-// ==========================================
 const BOOK_DATA = {
   "levels": [
     {
@@ -667,26 +176,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "一",
-                    "是",
-                    "的"
-                  ],
-                  "answer": "的"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "的",
-                    "一",
-                    "是"
-                  ],
-                  "answer": "一"
                 },
                 {
                   "type": "read",
@@ -966,26 +455,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "在",
-                    "的",
-                    "一"
-                  ],
-                  "answer": "在"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "的",
-                    "有",
-                    "一"
-                  ],
-                  "answer": "有"
                 },
                 {
                   "type": "read",
@@ -1350,26 +819,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "一",
-                    "来",
-                    "的"
-                  ],
-                  "answer": "来"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "以",
-                    "的",
-                    "一"
-                  ],
-                  "answer": "以"
                 },
                 {
                   "type": "read",
@@ -1818,26 +1267,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "一",
-                    "的",
-                    "说"
-                  ],
-                  "answer": "说"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "时",
-                    "一",
-                    "的"
-                  ],
-                  "answer": "时"
                 },
                 {
                   "type": "read",
@@ -2370,26 +1799,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "要",
-                    "一",
-                    "的"
-                  ],
-                  "answer": "要"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "让",
-                    "的",
-                    "一"
-                  ],
-                  "answer": "让"
                 },
                 {
                   "type": "read",
@@ -3006,26 +2415,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "一",
-                    "己",
-                    "的"
-                  ],
-                  "answer": "己"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "一",
-                    "的",
-                    "她"
-                  ],
-                  "answer": "她"
                 },
                 {
                   "type": "read",
@@ -3744,26 +3133,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "那",
-                    "一",
-                    "的"
-                  ],
-                  "answer": "那"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "的",
-                    "一",
-                    "生"
-                  ],
-                  "answer": "生"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "的 一 是 不 了 人 我 在",
@@ -3952,26 +3321,6 @@ const BOOK_DATA = {
                       "image": "❤️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "家",
-                    "后",
-                    "过"
-                  ],
-                  "answer": "家"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "家",
-                    "过",
-                    "后"
-                  ],
-                  "answer": "后"
                 },
                 {
                   "type": "read",
@@ -4251,26 +3600,6 @@ const BOOK_DATA = {
                       "image": "❤️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "么",
-                    "家",
-                    "后"
-                  ],
-                  "answer": "么"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "后",
-                    "家",
-                    "十"
-                  ],
-                  "answer": "十"
                 },
                 {
                   "type": "read",
@@ -4635,26 +3964,6 @@ const BOOK_DATA = {
                       "image": "❤️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "没",
-                    "后",
-                    "家"
-                  ],
-                  "answer": "没"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "其",
-                    "家",
-                    "后"
-                  ],
-                  "answer": "其"
                 },
                 {
                   "type": "read",
@@ -5103,26 +4412,6 @@ const BOOK_DATA = {
                       "image": "❤️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "家",
-                    "很",
-                    "后"
-                  ],
-                  "answer": "很"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "可",
-                    "后",
-                    "家"
-                  ],
-                  "answer": "可"
                 },
                 {
                   "type": "read",
@@ -5655,26 +4944,6 @@ const BOOK_DATA = {
                       "image": "❤️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "后",
-                    "家",
-                    "开"
-                  ],
-                  "answer": "开"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "些",
-                    "家",
-                    "后"
-                  ],
-                  "answer": "些"
                 },
                 {
                   "type": "read",
@@ -6291,26 +5560,6 @@ const BOOK_DATA = {
                       "image": "❤️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "家",
-                    "后",
-                    "当"
-                  ],
-                  "answer": "当"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "后",
-                    "最",
-                    "家"
-                  ],
-                  "answer": "最"
                 },
                 {
                   "type": "read",
@@ -7029,26 +6278,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "家",
-                    "力",
-                    "后"
-                  ],
-                  "answer": "力"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "家",
-                    "后",
-                    "话"
-                  ],
-                  "answer": "话"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "家 后 过 天 心 三 小 么",
@@ -7237,26 +6466,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "定",
-                    "间",
-                    "看"
-                  ],
-                  "answer": "间"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "间",
-                    "定",
-                    "看"
-                  ],
-                  "answer": "看"
                 },
                 {
                   "type": "read",
@@ -7536,26 +6745,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "看",
-                    "世",
-                    "间"
-                  ],
-                  "answer": "世"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "看",
-                    "方",
-                    "间"
-                  ],
-                  "answer": "方"
                 },
                 {
                   "type": "read",
@@ -7920,26 +7109,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "头",
-                    "间",
-                    "看"
-                  ],
-                  "answer": "头"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "间",
-                    "回",
-                    "看"
-                  ],
-                  "answer": "回"
                 },
                 {
                   "type": "read",
@@ -8388,26 +7557,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "间",
-                    "看",
-                    "走"
-                  ],
-                  "answer": "走"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "它",
-                    "间",
-                    "看"
-                  ],
-                  "answer": "它"
                 },
                 {
                   "type": "read",
@@ -8940,26 +8089,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "间",
-                    "用",
-                    "看"
-                  ],
-                  "answer": "用"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "看",
-                    "间",
-                    "文"
-                  ],
-                  "answer": "文"
                 },
                 {
                   "type": "read",
@@ -9576,26 +8705,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "间",
-                    "第",
-                    "看"
-                  ],
-                  "answer": "第"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "间",
-                    "看",
-                    "书"
-                  ],
-                  "answer": "书"
                 },
                 {
                   "type": "read",
@@ -10314,26 +9423,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "看",
-                    "间",
-                    "次"
-                  ],
-                  "answer": "次"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "常",
-                    "看",
-                    "间"
-                  ],
-                  "answer": "常"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "间 看 定 明 别 真 将 世",
@@ -10522,26 +9611,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "目",
-                    "直",
-                    "海"
-                  ],
-                  "answer": "目"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "直",
-                    "海",
-                    "目"
-                  ],
-                  "answer": "海"
                 },
                 {
                   "type": "read",
@@ -10821,26 +9890,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "海",
-                    "目",
-                    "西"
-                  ],
-                  "answer": "西"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "目",
-                    "体",
-                    "海"
-                  ],
-                  "answer": "体"
                 },
                 {
                   "type": "read",
@@ -11205,26 +10254,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "口",
-                    "海",
-                    "目"
-                  ],
-                  "answer": "口"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "种",
-                    "目",
-                    "海"
-                  ],
-                  "answer": "种"
                 },
                 {
                   "type": "read",
@@ -11673,26 +10702,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "海",
-                    "内",
-                    "目"
-                  ],
-                  "answer": "内"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "品",
-                    "海",
-                    "目"
-                  ],
-                  "answer": "品"
                 },
                 {
                   "type": "read",
@@ -12225,26 +11234,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "马",
-                    "目",
-                    "海"
-                  ],
-                  "answer": "马"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "海",
-                    "步",
-                    "目"
-                  ],
-                  "answer": "步"
                 },
                 {
                   "type": "read",
@@ -12861,26 +11850,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "海",
-                    "目",
-                    "水"
-                  ],
-                  "answer": "水"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "金",
-                    "海",
-                    "目"
-                  ],
-                  "answer": "金"
                 },
                 {
                   "type": "read",
@@ -13599,26 +12568,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "打",
-                    "海",
-                    "目"
-                  ],
-                  "answer": "打"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "目",
-                    "海",
-                    "量"
-                  ],
-                  "answer": "量"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "目 海 直 更 提 受 感 西",
@@ -13815,26 +12764,6 @@ const BOOK_DATA = {
                       "image": "🌬️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "论",
-                    "各",
-                    "员"
-                  ],
-                  "answer": "论"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "各",
-                    "员",
-                    "论"
-                  ],
-                  "answer": "员"
                 },
                 {
                   "type": "read",
@@ -14114,26 +13043,6 @@ const BOOK_DATA = {
                       "image": "🌬️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "论",
-                    "员",
-                    "云"
-                  ],
-                  "answer": "云"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "员",
-                    "河",
-                    "论"
-                  ],
-                  "answer": "河"
                 },
                 {
                   "type": "read",
@@ -14498,26 +13407,6 @@ const BOOK_DATA = {
                       "image": "🌬️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "泥",
-                    "论",
-                    "员"
-                  ],
-                  "answer": "泥"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "土",
-                    "论",
-                    "员"
-                  ],
-                  "answer": "土"
                 },
                 {
                   "type": "read",
@@ -14966,26 +13855,6 @@ const BOOK_DATA = {
                       "image": "🌬️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "枝",
-                    "员",
-                    "论"
-                  ],
-                  "answer": "枝"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "瓜",
-                    "员",
-                    "论"
-                  ],
-                  "answer": "瓜"
                 },
                 {
                   "type": "read",
@@ -15518,26 +14387,6 @@ const BOOK_DATA = {
                       "image": "🌬️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "糖",
-                    "员",
-                    "论"
-                  ],
-                  "answer": "糖"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "盐",
-                    "论",
-                    "员"
-                  ],
-                  "answer": "盐"
                 },
                 {
                   "type": "read",
@@ -16154,26 +15003,6 @@ const BOOK_DATA = {
                       "image": "🌬️"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "员",
-                    "住",
-                    "论"
-                  ],
-                  "answer": "住"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "论",
-                    "路",
-                    "员"
-                  ],
-                  "answer": "路"
                 },
                 {
                   "type": "read",
@@ -16892,26 +15721,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "站",
-                    "论",
-                    "员"
-                  ],
-                  "answer": "站"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "城",
-                    "论",
-                    "员"
-                  ],
-                  "answer": "城"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "论 员 各 理 风 雨 雪 云",
@@ -17100,26 +15909,6 @@ const BOOK_DATA = {
                       "image": "🥤"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "窗",
-                    "桌",
-                    "床"
-                  ],
-                  "answer": "窗"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "床",
-                    "桌",
-                    "窗"
-                  ],
-                  "answer": "床"
                 },
                 {
                   "type": "read",
@@ -17399,26 +16188,6 @@ const BOOK_DATA = {
                       "image": "🥤"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "刀",
-                    "床",
-                    "窗"
-                  ],
-                  "answer": "刀"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "笔",
-                    "床",
-                    "窗"
-                  ],
-                  "answer": "笔"
                 },
                 {
                   "type": "read",
@@ -17783,26 +16552,6 @@ const BOOK_DATA = {
                       "image": "🥤"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "牛",
-                    "床",
-                    "窗"
-                  ],
-                  "answer": "牛"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "羊",
-                    "窗",
-                    "床"
-                  ],
-                  "answer": "羊"
                 },
                 {
                   "type": "read",
@@ -18251,26 +17000,6 @@ const BOOK_DATA = {
                       "image": "🥤"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "床",
-                    "虫",
-                    "窗"
-                  ],
-                  "answer": "虫"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "蛇",
-                    "窗",
-                    "床"
-                  ],
-                  "answer": "蛇"
                 },
                 {
                   "type": "read",
@@ -18803,26 +17532,6 @@ const BOOK_DATA = {
                       "image": "🥤"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "凤",
-                    "床",
-                    "窗"
-                  ],
-                  "answer": "凤"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "鹿",
-                    "床",
-                    "窗"
-                  ],
-                  "answer": "鹿"
                 },
                 {
                   "type": "read",
@@ -19439,26 +18148,6 @@ const BOOK_DATA = {
                       "image": "🥤"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "床",
-                    "窗",
-                    "鸽"
-                  ],
-                  "answer": "鸽"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "窗",
-                    "鹰",
-                    "床"
-                  ],
-                  "answer": "鹰"
                 },
                 {
                   "type": "read",
@@ -20177,26 +18866,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "鹤",
-                    "窗",
-                    "床"
-                  ],
-                  "answer": "鹤"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "床",
-                    "红",
-                    "窗"
-                  ],
-                  "answer": "红"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "窗 床 桌 椅 杯 碗 盘 刀",
@@ -20385,26 +19054,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "灰",
-                    "银",
-                    "粉"
-                  ],
-                  "answer": "粉"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "粉",
-                    "灰",
-                    "银"
-                  ],
-                  "answer": "灰"
                 },
                 {
                   "type": "read",
@@ -20684,26 +19333,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "灰",
-                    "色",
-                    "粉"
-                  ],
-                  "answer": "色"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "彩",
-                    "粉",
-                    "灰"
-                  ],
-                  "answer": "彩"
                 },
                 {
                   "type": "read",
@@ -21068,26 +19697,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "清",
-                    "灰",
-                    "粉"
-                  ],
-                  "answer": "清"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "灰",
-                    "楚",
-                    "粉"
-                  ],
-                  "answer": "楚"
                 },
                 {
                   "type": "read",
@@ -21536,26 +20145,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "齐",
-                    "灰",
-                    "粉"
-                  ],
-                  "answer": "齐"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "灰",
-                    "粉",
-                    "爸"
-                  ],
-                  "answer": "爸"
                 },
                 {
                   "type": "read",
@@ -22088,26 +20677,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "粉",
-                    "弟",
-                    "灰"
-                  ],
-                  "answer": "弟"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "妹",
-                    "灰",
-                    "粉"
-                  ],
-                  "answer": "妹"
                 },
                 {
                   "type": "read",
@@ -22724,26 +21293,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "粉",
-                    "灰",
-                    "儿"
-                  ],
-                  "answer": "儿"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "男",
-                    "灰",
-                    "粉"
-                  ],
-                  "answer": "男"
                 },
                 {
                   "type": "read",
@@ -23462,26 +22011,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "粉",
-                    "灰",
-                    "师"
-                  ],
-                  "answer": "师"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "粉",
-                    "买",
-                    "灰"
-                  ],
-                  "answer": "买"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "粉 灰 银 橙 青 棕 褐 色",
@@ -23670,26 +22199,6 @@ const BOOK_DATA = {
                       "image": "🏊"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "唱",
-                    "跳",
-                    "画"
-                  ],
-                  "answer": "画"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "跳",
-                    "唱",
-                    "画"
-                  ],
-                  "answer": "唱"
                 },
                 {
                   "type": "read",
@@ -23969,26 +22478,6 @@ const BOOK_DATA = {
                       "image": "🏊"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "唱",
-                    "躺",
-                    "画"
-                  ],
-                  "answer": "躺"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "蹲",
-                    "唱",
-                    "画"
-                  ],
-                  "answer": "蹲"
                 },
                 {
                   "type": "read",
@@ -24353,26 +22842,6 @@ const BOOK_DATA = {
                       "image": "🏊"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "抬",
-                    "画",
-                    "唱"
-                  ],
-                  "answer": "抬"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "唱",
-                    "画",
-                    "搬"
-                  ],
-                  "answer": "搬"
                 },
                 {
                   "type": "read",
@@ -24821,26 +23290,6 @@ const BOOK_DATA = {
                       "image": "🏊"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "扔",
-                    "画",
-                    "唱"
-                  ],
-                  "answer": "扔"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "唱",
-                    "画",
-                    "接"
-                  ],
-                  "answer": "接"
                 },
                 {
                   "type": "read",
@@ -25377,26 +23826,6 @@ const BOOK_DATA = {
                       "image": "🏊"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "画",
-                    "哀",
-                    "唱"
-                  ],
-                  "answer": "哀"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "乐",
-                    "唱",
-                    "画"
-                  ],
-                  "answer": "乐"
                 },
                 {
                   "type": "read",
@@ -26017,26 +24446,6 @@ const BOOK_DATA = {
                       "image": "🏊"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "唱",
-                    "忙",
-                    "画"
-                  ],
-                  "answer": "忙"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "闲",
-                    "画",
-                    "唱"
-                  ],
-                  "answer": "闲"
                 },
                 {
                   "type": "read",
@@ -26759,26 +25168,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "画",
-                    "唱",
-                    "冷"
-                  ],
-                  "answer": "冷"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "暖",
-                    "唱",
-                    "画"
-                  ],
-                  "answer": "暖"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "画 唱 跳 跑 游 爬 坐 躺",
@@ -26979,26 +25368,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "秋",
-                    "夏",
-                    "春"
-                  ],
-                  "answer": "春"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "秋",
-                    "夏",
-                    "春"
-                  ],
-                  "answer": "夏"
                 },
                 {
                   "type": "read",
@@ -27282,26 +25651,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "夏",
-                    "星",
-                    "春"
-                  ],
-                  "answer": "星"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "夏",
-                    "春",
-                    "川"
-                  ],
-                  "answer": "川"
                 },
                 {
                   "type": "read",
@@ -27670,26 +26019,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "春",
-                    "夏",
-                    "视"
-                  ],
-                  "answer": "视"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "答",
-                    "夏",
-                    "春"
-                  ],
-                  "answer": "答"
                 },
                 {
                   "type": "read",
@@ -28142,26 +26471,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "春",
-                    "国",
-                    "夏"
-                  ],
-                  "answer": "国"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "王",
-                    "夏",
-                    "春"
-                  ],
-                  "answer": "王"
                 },
                 {
                   "type": "read",
@@ -28698,26 +27007,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "春",
-                    "夏",
-                    "武"
-                  ],
-                  "answer": "武"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "器",
-                    "夏",
-                    "春"
-                  ],
-                  "answer": "器"
                 },
                 {
                   "type": "read",
@@ -29338,26 +27627,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "夏",
-                    "宫",
-                    "春"
-                  ],
-                  "answer": "宫"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "殿",
-                    "春",
-                    "夏"
-                  ],
-                  "answer": "殿"
                 },
                 {
                   "type": "read",
@@ -30080,26 +28349,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "原",
-                    "夏",
-                    "春"
-                  ],
-                  "answer": "原"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "夏",
-                    "春",
-                    "漠"
-                  ],
-                  "answer": "漠"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "春 夏 秋 冬 昨 年 日 星",
@@ -30288,26 +28537,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "皮",
-                    "尺",
-                    "橡"
-                  ],
-                  "answer": "橡"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "尺",
-                    "橡",
-                    "皮"
-                  ],
-                  "answer": "皮"
                 },
                 {
                   "type": "read",
@@ -30587,26 +28816,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "橡",
-                    "数",
-                    "皮"
-                  ],
-                  "answer": "数"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "成",
-                    "皮",
-                    "橡"
-                  ],
-                  "answer": "成"
                 },
                 {
                   "type": "read",
@@ -30971,26 +29180,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "橡",
-                    "病",
-                    "皮"
-                  ],
-                  "answer": "病"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "橡",
-                    "皮",
-                    "药"
-                  ],
-                  "answer": "药"
                 },
                 {
                   "type": "read",
@@ -31439,26 +29628,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "发",
-                    "橡",
-                    "皮"
-                  ],
-                  "answer": "发"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "橡",
-                    "皮",
-                    "烧"
-                  ],
-                  "answer": "烧"
                 },
                 {
                   "type": "read",
@@ -31991,26 +30160,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "橡",
-                    "价",
-                    "皮"
-                  ],
-                  "answer": "价"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "橡",
-                    "格",
-                    "皮"
-                  ],
-                  "answer": "格"
                 },
                 {
                   "type": "read",
@@ -32631,26 +30780,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "找",
-                    "皮",
-                    "橡"
-                  ],
-                  "answer": "找"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "零",
-                    "皮",
-                    "橡"
-                  ],
-                  "answer": "零"
                 },
                 {
                   "type": "read",
@@ -33373,26 +31502,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "皮",
-                    "橡",
-                    "具"
-                  ],
-                  "answer": "具"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "服",
-                    "橡",
-                    "皮"
-                  ],
-                  "answer": "服"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "橡 皮 尺 作 业 试 分 数",
@@ -33581,26 +31690,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "泉",
-                    "梯",
-                    "滑"
-                  ],
-                  "answer": "泉"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "滑",
-                    "泉",
-                    "梯"
-                  ],
-                  "answer": "滑"
                 },
                 {
                   "type": "read",
@@ -33880,26 +31969,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "滑",
-                    "泉",
-                    "亭"
-                  ],
-                  "answer": "亭"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "蝴",
-                    "滑",
-                    "泉"
-                  ],
-                  "answer": "蝴"
                 },
                 {
                   "type": "read",
@@ -34264,26 +32333,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "盆",
-                    "泉",
-                    "滑"
-                  ],
-                  "answer": "盆"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "筷",
-                    "泉",
-                    "滑"
-                  ],
-                  "answer": "筷"
                 },
                 {
                   "type": "read",
@@ -34732,26 +32781,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "滑",
-                    "泉",
-                    "微"
-                  ],
-                  "answer": "微"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "波",
-                    "滑",
-                    "泉"
-                  ],
-                  "answer": "波"
                 },
                 {
                   "type": "read",
@@ -35284,26 +33313,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "泉",
-                    "滑",
-                    "铺"
-                  ],
-                  "answer": "铺"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "枕",
-                    "滑",
-                    "泉"
-                  ],
-                  "answer": "枕"
                 },
                 {
                   "type": "read",
@@ -35920,26 +33929,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "钟",
-                    "泉",
-                    "滑"
-                  ],
-                  "answer": "钟"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "镜",
-                    "泉",
-                    "滑"
-                  ],
-                  "answer": "镜"
                 },
                 {
                   "type": "read",
@@ -36658,26 +34647,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "空",
-                    "泉",
-                    "滑"
-                  ],
-                  "answer": "空"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "滑",
-                    "调",
-                    "泉"
-                  ],
-                  "answer": "调"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "泉 滑 梯 千 跷 坑 池 亭",
@@ -36866,26 +34835,6 @@ const BOOK_DATA = {
                       "image": "🦷"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "缸",
-                    "座",
-                    "浴"
-                  ],
-                  "answer": "座"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "浴",
-                    "缸",
-                    "座"
-                  ],
-                  "answer": "浴"
                 },
                 {
                   "type": "read",
@@ -37165,26 +35114,6 @@ const BOOK_DATA = {
                       "image": "🦷"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "浴",
-                    "漱",
-                    "座"
-                  ],
-                  "answer": "漱"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "座",
-                    "浴",
-                    "桶"
-                  ],
-                  "answer": "桶"
                 },
                 {
                   "type": "read",
@@ -37549,26 +35478,6 @@ const BOOK_DATA = {
                       "image": "🦷"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "晨",
-                    "座",
-                    "浴"
-                  ],
-                  "answer": "晨"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "座",
-                    "午",
-                    "浴"
-                  ],
-                  "answer": "午"
                 },
                 {
                   "type": "read",
@@ -38017,26 +35926,6 @@ const BOOK_DATA = {
                       "image": "🦷"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "座",
-                    "虹",
-                    "浴"
-                  ],
-                  "answer": "虹"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "座",
-                    "浴",
-                    "南"
-                  ],
-                  "answer": "南"
                 },
                 {
                   "type": "read",
@@ -38569,26 +36458,6 @@ const BOOK_DATA = {
                       "image": "🦷"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "浴",
-                    "短",
-                    "座"
-                  ],
-                  "answer": "短"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "座",
-                    "宽",
-                    "浴"
-                  ],
-                  "answer": "宽"
                 },
                 {
                   "type": "read",
@@ -39205,26 +37074,6 @@ const BOOK_DATA = {
                       "image": "🦷"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "轻",
-                    "座",
-                    "浴"
-                  ],
-                  "answer": "轻"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "座",
-                    "浴",
-                    "二"
-                  ],
-                  "answer": "二"
                 },
                 {
                   "type": "read",
@@ -39943,26 +37792,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "座",
-                    "浴",
-                    "百"
-                  ],
-                  "answer": "百"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "座",
-                    "亿",
-                    "浴"
-                  ],
-                  "answer": "亿"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "座 浴 缸 洒 牙 刷 膏 漱",
@@ -40159,26 +37988,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "块",
-                    "串",
-                    "条"
-                  ],
-                  "answer": "串"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "串",
-                    "条",
-                    "块"
-                  ],
-                  "answer": "条"
                 },
                 {
                   "type": "read",
@@ -40458,26 +38267,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "条",
-                    "串",
-                    "阿"
-                  ],
-                  "answer": "阿"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "串",
-                    "姑",
-                    "条"
-                  ],
-                  "answer": "姑"
                 },
                 {
                   "type": "read",
@@ -40842,26 +38631,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "串",
-                    "条",
-                    "导"
-                  ],
-                  "answer": "导"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "条",
-                    "伙",
-                    "串"
-                  ],
-                  "answer": "伙"
                 },
                 {
                   "type": "read",
@@ -41310,26 +39079,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "条",
-                    "广",
-                    "串"
-                  ],
-                  "answer": "广"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "州",
-                    "串",
-                    "条"
-                  ],
-                  "answer": "州"
                 },
                 {
                   "type": "read",
@@ -41862,26 +39611,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "苏",
-                    "条",
-                    "串"
-                  ],
-                  "answer": "苏"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "条",
-                    "连",
-                    "串"
-                  ],
-                  "answer": "连"
                 },
                 {
                   "type": "read",
@@ -42498,26 +40227,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "条",
-                    "串",
-                    "极"
-                  ],
-                  "answer": "极"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "印",
-                    "串",
-                    "条"
-                  ],
-                  "answer": "印"
                 },
                 {
                   "type": "read",
@@ -43236,26 +40945,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "串",
-                    "语",
-                    "条"
-                  ],
-                  "answer": "语"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "串",
-                    "英",
-                    "条"
-                  ],
-                  "answer": "英"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "串 条 块 片 张 每 周 阿",
@@ -43444,26 +41133,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "史",
-                    "历",
-                    "息"
-                  ],
-                  "answer": "历"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "历",
-                    "息",
-                    "史"
-                  ],
-                  "answer": "史"
                 },
                 {
                   "type": "read",
@@ -43743,26 +41412,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "历",
-                    "蜡",
-                    "史"
-                  ],
-                  "answer": "蜡"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "历",
-                    "棒",
-                    "史"
-                  ],
-                  "answer": "棒"
                 },
                 {
                   "type": "read",
@@ -44127,26 +41776,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "笛",
-                    "历",
-                    "史"
-                  ],
-                  "answer": "笛"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "史",
-                    "历",
-                    "鼓"
-                  ],
-                  "answer": "鼓"
                 },
                 {
                   "type": "read",
@@ -44595,26 +42224,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "历",
-                    "史",
-                    "筝"
-                  ],
-                  "answer": "筝"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "史",
-                    "历",
-                    "胡"
-                  ],
-                  "answer": "胡"
                 },
                 {
                   "type": "read",
@@ -45147,26 +42756,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "史",
-                    "历",
-                    "羽"
-                  ],
-                  "answer": "羽"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "网",
-                    "史",
-                    "历"
-                  ],
-                  "answer": "网"
                 },
                 {
                   "type": "read",
@@ -45783,26 +43372,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "史",
-                    "苹",
-                    "历"
-                  ],
-                  "answer": "苹"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "香",
-                    "史",
-                    "历"
-                  ],
-                  "answer": "香"
                 },
                 {
                   "type": "read",
@@ -46521,26 +44090,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "桃",
-                    "历",
-                    "史"
-                  ],
-                  "answer": "桃"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "史",
-                    "历",
-                    "橘"
-                  ],
-                  "answer": "橘"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "历 史 息 技 钢 圆 珠 蜡",
@@ -46729,26 +44278,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "卜",
-                    "萝",
-                    "榴"
-                  ],
-                  "answer": "榴"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "榴",
-                    "卜",
-                    "萝"
-                  ],
-                  "answer": "萝"
                 },
                 {
                   "type": "read",
@@ -47028,26 +44557,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "苦",
-                    "萝",
-                    "榴"
-                  ],
-                  "answer": "苦"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "榴",
-                    "萝",
-                    "芹"
-                  ],
-                  "answer": "芹"
                 },
                 {
                   "type": "read",
@@ -47412,26 +44921,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "榴",
-                    "腐",
-                    "萝"
-                  ],
-                  "answer": "腐"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "榴",
-                    "酸",
-                    "萝"
-                  ],
-                  "answer": "酸"
                 },
                 {
                   "type": "read",
@@ -47880,26 +45369,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "榴",
-                    "饨",
-                    "萝"
-                  ],
-                  "answer": "饨"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "汤",
-                    "萝",
-                    "榴"
-                  ],
-                  "answer": "汤"
                 },
                 {
                   "type": "read",
@@ -48432,26 +45901,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "榴",
-                    "萝",
-                    "汽"
-                  ],
-                  "answer": "汽"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "萝",
-                    "轮",
-                    "榴"
-                  ],
-                  "answer": "轮"
                 },
                 {
                   "type": "read",
@@ -49068,26 +46517,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "萝",
-                    "卡",
-                    "榴"
-                  ],
-                  "answer": "卡"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "萝",
-                    "榴",
-                    "脑"
-                  ],
-                  "answer": "脑"
                 },
                 {
                   "type": "read",
@@ -49806,26 +47235,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "耳",
-                    "萝",
-                    "榴"
-                  ],
-                  "answer": "耳"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "榴",
-                    "朵",
-                    "萝"
-                  ],
-                  "answer": "朵"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "榴 萝 卜 番 茄 角 丝 苦",
@@ -50014,26 +47423,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胳",
-                    "膊",
-                    "趾"
-                  ],
-                  "answer": "趾"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "趾",
-                    "膊",
-                    "胳"
-                  ],
-                  "answer": "胳"
                 },
                 {
                   "type": "read",
@@ -50313,26 +47702,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胳",
-                    "盖",
-                    "趾"
-                  ],
-                  "answer": "盖"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "兴",
-                    "趾",
-                    "胳"
-                  ],
-                  "answer": "兴"
                 },
                 {
                   "type": "read",
@@ -50697,26 +48066,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胳",
-                    "害",
-                    "趾"
-                  ],
-                  "answer": "害"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "担",
-                    "胳",
-                    "趾"
-                  ],
-                  "answer": "担"
                 },
                 {
                   "type": "read",
@@ -51165,26 +48514,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胳",
-                    "趾",
-                    "坚"
-                  ],
-                  "answer": "坚"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胳",
-                    "强",
-                    "趾"
-                  ],
-                  "answer": "强"
                 },
                 {
                   "type": "read",
@@ -51717,26 +49046,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "趾",
-                    "诚",
-                    "胳"
-                  ],
-                  "answer": "诚"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胳",
-                    "守",
-                    "趾"
-                  ],
-                  "answer": "守"
                 },
                 {
                   "type": "read",
@@ -52353,26 +49662,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "谨",
-                    "趾",
-                    "胳"
-                  ],
-                  "answer": "谨"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "趾",
-                    "胳",
-                    "慎"
-                  ],
-                  "answer": "慎"
                 },
                 {
                   "type": "read",
@@ -53091,26 +50380,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胳",
-                    "趾",
-                    "洁"
-                  ],
-                  "answer": "洁"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胳",
-                    "危",
-                    "趾"
-                  ],
-                  "answer": "危"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "趾 胳 膊 腿 肩 膀 膝 盖",
@@ -53307,26 +50576,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "仔",
-                    "认",
-                    "易"
-                  ],
-                  "answer": "易"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "易",
-                    "仔",
-                    "认"
-                  ],
-                  "answer": "认"
                 },
                 {
                   "type": "read",
@@ -53606,26 +50855,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "易",
-                    "认",
-                    "慧"
-                  ],
-                  "answer": "慧"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "认",
-                    "易",
-                    "笨"
-                  ],
-                  "answer": "笨"
                 },
                 {
                   "type": "read",
@@ -53990,26 +51219,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "易",
-                    "柔",
-                    "认"
-                  ],
-                  "answer": "柔"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "认",
-                    "软",
-                    "易"
-                  ],
-                  "answer": "软"
                 },
                 {
                   "type": "read",
@@ -54458,26 +51667,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "潮",
-                    "易",
-                    "认"
-                  ],
-                  "answer": "潮"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "认",
-                    "易",
-                    "湿"
-                  ],
-                  "answer": "湿"
                 },
                 {
                   "type": "read",
@@ -55010,26 +52199,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胖",
-                    "易",
-                    "认"
-                  ],
-                  "answer": "胖"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "易",
-                    "瘦",
-                    "认"
-                  ],
-                  "answer": "瘦"
                 },
                 {
                   "type": "read",
@@ -55646,26 +52815,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "易",
-                    "认",
-                    "馆"
-                  ],
-                  "answer": "馆"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "验",
-                    "易",
-                    "认"
-                  ],
-                  "answer": "验"
                 },
                 {
                   "type": "read",
@@ -56384,26 +53533,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "裙",
-                    "认",
-                    "易"
-                  ],
-                  "answer": "裙"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "易",
-                    "认",
-                    "套"
-                  ],
-                  "answer": "套"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "易 认 仔 聪 愚 蠢 智 慧",
@@ -56592,26 +53721,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "据",
-                    "线",
-                    "充"
-                  ],
-                  "answer": "充"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "据",
-                    "充",
-                    "线"
-                  ],
-                  "answer": "据"
                 },
                 {
                   "type": "read",
@@ -56891,26 +54000,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "充",
-                    "据",
-                    "示"
-                  ],
-                  "answer": "示"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "充",
-                    "据",
-                    "壶"
-                  ],
-                  "answer": "壶"
                 },
                 {
                   "type": "read",
@@ -57275,26 +54364,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "习",
-                    "据",
-                    "充"
-                  ],
-                  "answer": "习"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "据",
-                    "充",
-                    "册"
-                  ],
-                  "answer": "册"
                 },
                 {
                   "type": "read",
@@ -57743,26 +54812,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "胶",
-                    "据",
-                    "充"
-                  ],
-                  "answer": "胶"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "订",
-                    "据",
-                    "充"
-                  ],
-                  "answer": "订"
                 },
                 {
                   "type": "read",
@@ -58295,26 +55344,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "据",
-                    "充",
-                    "圈"
-                  ],
-                  "answer": "圈"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "据",
-                    "挞",
-                    "充"
-                  ],
-                  "answer": "挞"
                 },
                 {
                   "type": "read",
@@ -58931,26 +55960,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "据",
-                    "蜜",
-                    "充"
-                  ],
-                  "answer": "蜜"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "据",
-                    "界",
-                    "充"
-                  ],
-                  "answer": "界"
                 },
                 {
                   "type": "read",
@@ -59669,26 +56678,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "充",
-                    "据",
-                    "宗"
-                  ],
-                  "answer": "宗"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "哲",
-                    "充",
-                    "据"
-                  ],
-                  "answer": "哲"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "充 据 线 鼠 标 键 显 示",
@@ -59877,26 +56866,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "脾",
-                    "质",
-                    "性"
-                  ],
-                  "answer": "质"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "脾",
-                    "性",
-                    "质"
-                  ],
-                  "answer": "性"
                 },
                 {
                   "type": "read",
@@ -60176,26 +57145,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "性",
-                    "径",
-                    "质"
-                  ],
-                  "answer": "径"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "性",
-                    "质",
-                    "段"
-                  ],
-                  "answer": "段"
                 },
                 {
                   "type": "read",
@@ -60560,26 +57509,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "性",
-                    "质",
-                    "环"
-                  ],
-                  "answer": "环"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "质",
-                    "性",
-                    "境"
-                  ],
-                  "answer": "境"
                 },
                 {
                   "type": "read",
@@ -61028,26 +57957,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "性",
-                    "质",
-                    "序"
-                  ],
-                  "answer": "序"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "性",
-                    "质",
-                    "务"
-                  ],
-                  "answer": "务"
                 },
                 {
                   "type": "read",
@@ -61580,26 +58489,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "质",
-                    "司",
-                    "性"
-                  ],
-                  "answer": "司"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "性",
-                    "质",
-                    "企"
-                  ],
-                  "answer": "企"
                 },
                 {
                   "type": "read",
@@ -62216,26 +59105,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "费",
-                    "质",
-                    "性"
-                  ],
-                  "answer": "费"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "质",
-                    "性",
-                    "入"
-                  ],
-                  "answer": "入"
                 },
                 {
                   "type": "read",
@@ -62954,26 +59823,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "富",
-                    "质",
-                    "性"
-                  ],
-                  "answer": "富"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "产",
-                    "性",
-                    "质"
-                  ],
-                  "answer": "产"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "质 性 脾 态 观 立 途 径",
@@ -63162,26 +60011,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "策",
-                    "置",
-                    "略"
-                  ],
-                  "answer": "策"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "置",
-                    "策",
-                    "略"
-                  ],
-                  "answer": "略"
                 },
                 {
                   "type": "read",
@@ -63461,26 +60290,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "略",
-                    "策",
-                    "岗"
-                  ],
-                  "answer": "岗"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "素",
-                    "策",
-                    "略"
-                  ],
-                  "answer": "素"
                 },
                 {
                   "type": "read",
@@ -63845,26 +60654,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "期",
-                    "略",
-                    "策"
-                  ],
-                  "answer": "期"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "略",
-                    "策",
-                    "频"
-                  ],
-                  "answer": "频"
                 },
                 {
                   "type": "read",
@@ -64313,26 +61102,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "策",
-                    "略",
-                    "假"
-                  ],
-                  "answer": "假"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "策",
-                    "结",
-                    "略"
-                  ],
-                  "answer": "结"
                 },
                 {
                   "type": "read",
@@ -64865,26 +61634,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "略",
-                    "策",
-                    "积"
-                  ],
-                  "answer": "积"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "距",
-                    "略",
-                    "策"
-                  ],
-                  "answer": "距"
                 },
                 {
                   "type": "read",
@@ -65501,26 +62250,6 @@ const BOOK_DATA = {
                       "image": "📝"
                     }
                   ]
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "策",
-                    "欢",
-                    "略"
-                  ],
-                  "answer": "欢"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "虽",
-                    "策",
-                    "略"
-                  ],
-                  "answer": "虽"
                 },
                 {
                   "type": "read",
@@ -66239,26 +62968,6 @@ const BOOK_DATA = {
                   ]
                 },
                 {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "略",
-                    "策",
-                    "该"
-                  ],
-                  "answer": "该"
-                },
-                {
-                  "type": "fill",
-                  "question": "选字填空：我认识（ ）",
-                  "options": [
-                    "策",
-                    "略",
-                    "必"
-                  ],
-                  "answer": "必"
-                },
-                {
                   "type": "read",
                   "question": "读一读这些字：",
                   "sentence": "策 略 置 区 域 范 职 岗",
@@ -66280,6 +62989,7 @@ const BOOK_DATA = {
       ]
     }
   ]
+}
 };
 
 // ==========================================
