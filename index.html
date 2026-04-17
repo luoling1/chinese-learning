@@ -1,3 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>趣味识字乐园 - 分级阅读（1000字）</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+  <style>
+/* ==========================================
+   分级识字阅读网站 - 全局样式
+   ========================================== */
+
+:root {
+  --primary: #FF6B6B;
+  --primary-light: #FFE0E0;
+  --secondary: #4ECDC4;
+  --secondary-light: #D4F5F2;
+  --accent: #FFE66D;
+  --accent-dark: #FFD93D;
+  --purple: #A78BFA;
+  --purple-light: #EDE9FE;
+  --blue: #60A5FA;
+  --blue-light: #DBEAFE;
+  --green: #34D399;
+  --green-light: #D1FAE5;
+  --orange: #FB923C;
+  --orange-light: #FED7AA;
+  --pink: #F472B6;
+  --pink-light: #FCE7F3;
+  --bg: #FFF9F0;
+  --card-bg: #FFFFFF;
+  --text: #2D3436;
+  --text-light: #636E72;
+  --shadow: 0 4px 15px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255,107,107,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(78,205,196,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255,230,109,0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.page { display: none; animation: fadeIn 0.4s ease; }
+.page.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); } 20%, 40%, 60%, 80% { transform: translateX(5px); } }
+@keyframes starPop { 0% { transform: scale(0) rotate(-180deg); opacity: 0; } 60% { transform: scale(1.3) rotate(10deg); } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+/* 首页 */
+.home-header { text-align: center; padding: 16px 0 12px; }
+.home-logo { font-size: 48px; margin-bottom: 6px; animation: float 3s ease-in-out infinite; }
+.home-title { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--purple), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; }
+.home-subtitle { font-size: 14px; color: var(--text-light); }
+
+.progress-card {
+  background: var(--card-bg); border-radius: var(--radius); padding: 16px; margin: 12px 0;
+  box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px;
+}
+.progress-icon { font-size: 36px; animation: pulse 2s ease-in-out infinite; }
+.progress-info { flex: 1; }
+.progress-label { font-size: 14px; color: var(--text-light); margin-bottom: 8px; }
+.progress-bar-container { width: 100%; height: 16px; background: #F0F0F0; border-radius: 8px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent), var(--green)); border-radius: 8px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+.progress-bar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite; }
+.progress-stats { display: flex; gap: 16px; margin-top: 8px; font-size: 13px; color: var(--text-light); }
+.progress-stats span { display: flex; align-items: center; gap: 4px; }
+
+.level-section { margin: 16px 0; }
+.section-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+.level-card {
+  background: var(--card-bg); border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
+  box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); border: 3px solid transparent; position: relative; overflow: hidden;
+}
+.level-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.level-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+.level-card[data-level="level1"]::before { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+.level-card[data-level="level2"]::before { background: linear-gradient(90deg, var(--secondary), var(--blue)); }
+.level-card[data-level="level3"]::before { background: linear-gradient(90deg, var(--green), var(--secondary)); }
+.level-card[data-level="level4"]::before { background: linear-gradient(90deg, var(--purple), var(--pink)); }
+.level-card[data-level="level5"]::before { background: linear-gradient(90deg, var(--orange), var(--primary)); }
+
+.level-card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+.level-icon { font-size: 40px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 16px; }
+.level-card[data-level="level1"] .level-icon { background: var(--primary-light); }
+.level-card[data-level="level2"] .level-icon { background: var(--secondary-light); }
+.level-card[data-level="level3"] .level-icon { background: var(--green-light); }
+.level-card[data-level="level4"] .level-icon { background: var(--purple-light); }
+.level-card[data-level="level5"] .level-icon { background: var(--orange-light); }
+.level-name { font-size: 20px; font-weight: 700; }
+.level-desc { font-size: 14px; color: var(--text-light); margin-top: 4px; }
+
+.level-weeks { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.week-badge { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 20px; font-size: 13px; background: #F5F5F5; transition: var(--transition); }
+.week-badge.completed { background: var(--green-light); color: #059669; }
+.week-badge.in-progress { background: var(--accent); color: #92400E; }
+
+/* 级别详情页 */
+.page-header { display: flex; align-items: center; gap: 12px; padding: 16px 0; margin-bottom: 20px; }
+.back-btn { width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--card-bg); box-shadow: var(--shadow); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+.back-btn:hover { transform: scale(1.1); box-shadow: var(--shadow-lg); }
+.page-title { font-size: 24px; font-weight: 700; }
+
+/* 周卡片 */
+.week-card {
+  background: var(--card-bg); border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+  box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); border-left: 5px solid #E0E0E0; position: relative;
+}
+.week-card:hover { transform: translateX(4px); box-shadow: var(--shadow-lg); }
+.week-card.unlocked { border-left-color: var(--green); }
+.week-card.current { border-left-color: var(--accent-dark); }
+.week-card.locked { opacity: 0.6; cursor: not-allowed; }
+.week-card.completed { border-left-color: var(--secondary); }
+.week-card-header { display: flex; align-items: center; justify-content: space-between; }
+.week-card-title { font-size: 18px; font-weight: 600; }
+.week-card-theme { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+.week-card-stars { font-size: 20px; }
+.week-card-progress { margin-top: 12px; display: flex; gap: 8px; align-items: center; }
+.week-progress-bar { flex: 1; height: 8px; background: #F0F0F0; border-radius: 4px; overflow: hidden; }
+.week-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--green), var(--secondary)); transition: width 0.5s ease; }
+.week-progress-text { font-size: 12px; color: var(--text-light); white-space: nowrap; }
+.lock-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.5); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 32px; }
+
+/* 天卡片 */
+.day-card {
+  background: var(--card-bg); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px;
+  box-shadow: var(--shadow); cursor: pointer; transition: var(--transition); border-left: 4px solid #E0E0E0;
+}
+.day-card:hover { transform: translateX(4px); box-shadow: var(--shadow-lg); }
+.day-card.unlocked { border-left-color: var(--green); }
+.day-card.current { border-left-color: var(--accent-dark); }
+.day-card.locked { opacity: 0.5; cursor: not-allowed; }
+.day-card.completed { border-left-color: var(--secondary); }
+.day-card-header { display: flex; align-items: center; justify-content: space-between; }
+.day-card-title { font-size: 16px; font-weight: 600; }
+.day-card-info { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+.day-card-chars { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.day-char-tag { padding: 4px 10px; border-radius: 12px; font-size: 14px; font-weight: 700; background: #F5F5F5; }
+.day-char-tag.learned { background: var(--green-light); color: #059669; }
+.day-char-tag.review { background: var(--blue-light); color: #2563EB; }
+
+/* 学习页 */
+.learn-nav {
+  display: flex; justify-content: center; gap: 4px; padding: 8px; background: var(--card-bg);
+  border-radius: var(--radius); margin-bottom: 12px; box-shadow: var(--shadow); flex-wrap: wrap;
+}
+.learn-nav-item {
+  padding: 4px 10px; border-radius: 16px; border: 2px solid #E0E0E0; background: transparent;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); color: var(--text-light);
+}
+.learn-nav-item.active { background: var(--primary); border-color: var(--primary); color: white; }
+.learn-nav-item.completed { background: var(--green-light); border-color: var(--green); color: #059669; }
+.learn-nav-item.review-tag { background: var(--blue-light); border-color: var(--blue); color: #2563EB; font-size: 11px; }
+
+/* 汉字卡片 */
+.char-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow-lg); animation: bounceIn 0.5s ease; }
+.char-display { font-size: 80px; font-weight: 900; color: var(--primary); line-height: 1.1; margin: 6px 0; text-shadow: 3px 3px 0 rgba(255,107,107,0.1); cursor: pointer; transition: var(--transition); }
+.char-display:hover { transform: scale(1.05); }
+.char-display.review-char { color: var(--blue); }
+.char-pinyin { font-size: 24px; color: var(--secondary); font-weight: 600; margin-bottom: 4px; }
+.char-meaning { font-size: 16px; color: var(--text-light); margin-bottom: 8px; }
+.char-words { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.char-word-tag { padding: 4px 12px; border-radius: 20px; background: var(--purple-light); color: var(--purple); font-size: 14px; font-weight: 600; }
+.char-stroke-hint { background: var(--orange-light); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px; font-size: 15px; color: #9A4E00; line-height: 1.6; }
+.char-stroke-hint::before { content: '✏️ 怎么记这个字：'; display: block; font-weight: 700; margin-bottom: 8px; font-size: 16px; }
+
+/* 象形字演变区域 */
+.pictograph-section { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border-radius: var(--radius-sm); padding: 14px; margin-top: 12px; text-align: center; }
+.pictograph-title { font-size: 13px; font-weight: 700; color: #F57C00; margin-bottom: 8px; }
+.pictograph-evolution { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pictograph-stage { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.pictograph-char { font-size: 40px; line-height: 1.2; font-family: 'STLiti', 'KaiTi', 'SimSun', serif; }
+.pictograph-char.oracle { font-family: 'STLiti', 'KaiTi', serif; color: #8B4513; }
+.pictograph-char.seal { font-family: 'STFangsong', 'FangSong', serif; color: #A0522D; }
+.pictograph-char.modern { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; color: #2D3436; font-weight: 900; }
+.pictograph-label { font-size: 11px; color: #9E9E9E; }
+.pictograph-arrow { font-size: 20px; color: #FFB74D; }
+.pictograph-hint { margin-top: 8px; font-size: 13px; color: #795548; line-height: 1.5; background: rgba(255,255,255,0.6); padding: 8px; border-radius: 8px; }
+
+.char-sentence { background: var(--blue-light); border-radius: var(--radius-sm); padding: 10px; margin-top: 8px; font-size: 16px; color: #1E40AF; line-height: 1.5; }
+.char-sentence::before { content: '📖 例句：'; display: block; font-weight: 700; margin-bottom: 4px; font-size: 12px; color: var(--text-light); }
+
+.char-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+.char-badge.new-badge { background: var(--primary-light); color: var(--primary); }
+.char-badge.review-badge { background: var(--blue-light); color: var(--blue); }
+
+.learn-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 8px; }
+
+.btn { padding: 10px 20px; border-radius: 50px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.btn:active { transform: translateY(0); }
+.btn-primary { background: linear-gradient(135deg, var(--primary), #FF8E8E); color: white; }
+.btn-secondary { background: linear-gradient(135deg, var(--secondary), #7EDDD6); color: white; }
+.btn-accent { background: linear-gradient(135deg, var(--accent-dark), var(--accent)); color: #78350F; }
+.btn-purple { background: linear-gradient(135deg, var(--purple), #C4B5FD); color: white; }
+.btn-blue { background: linear-gradient(135deg, var(--blue), #93C5FD); color: white; }
+.btn-outline { background: transparent; border: 2px solid #E0E0E0; color: var(--text); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+/* 练习页 */
+.exercise-container { animation: slideUp 0.4s ease; }
+.exercise-header { text-align: center; margin-bottom: 12px; }
+.exercise-progress { display: flex; justify-content: center; gap: 6px; margin-bottom: 8px; }
+.exercise-dot { width: 12px; height: 12px; border-radius: 50%; background: #E0E0E0; transition: var(--transition); }
+.exercise-dot.active { background: var(--primary); transform: scale(1.3); }
+.exercise-dot.correct { background: var(--green); }
+.exercise-type-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.exercise-type-badge.fill { background: var(--blue-light); color: var(--blue); }
+.exercise-type-badge.read { background: var(--green-light); color: #059669; }
+.exercise-question { font-size: 22px; font-weight: 700; margin: 12px 0; }
+
+.fill-question { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); margin-bottom: 12px; }
+.fill-sentence { font-size: 24px; font-weight: 700; line-height: 1.6; margin: 8px 0; }
+.fill-blank { display: inline-block; min-width: 50px; border-bottom: 3px dashed var(--primary); color: var(--primary); padding: 0 6px; transition: var(--transition); }
+.fill-blank.filled { border-bottom-style: solid; animation: bounceIn 0.3s ease; }
+.fill-options { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.fill-option { width: 64px; height: 64px; border-radius: var(--radius-sm); border: 3px solid #E0E0E0; background: var(--card-bg); font-size: 30px; font-weight: 900; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; }
+.fill-option:hover { border-color: var(--blue); transform: scale(1.1); }
+.fill-option.correct { border-color: var(--green); background: var(--green-light); animation: bounceIn 0.3s ease; }
+.fill-option.wrong { border-color: var(--primary); background: var(--primary-light); animation: shake 0.5s ease; }
+
+/* 选择题卡片（看字选拼音/看拼音选字） */
+.quiz-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); margin-bottom: 12px; }
+.quiz-display { font-size: 56px; font-weight: 900; color: var(--text-dark); margin: 10px 0; line-height: 1.1; }
+.quiz-display.quiz-pinyin { font-size: 36px; color: var(--primary); font-weight: 700; }
+.quiz-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 280px; margin: 0 auto; }
+.quiz-option { padding: 14px; border-radius: var(--radius-sm); border: 3px solid #E0E0E0; background: var(--card-bg); font-size: 26px; font-weight: 700; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; min-height: 56px; }
+.quiz-option:hover { border-color: var(--blue); transform: scale(1.05); }
+.quiz-option.correct { border-color: var(--green); background: var(--green-light); animation: bounceIn 0.3s ease; }
+.quiz-option.wrong { border-color: var(--primary); background: var(--primary-light); animation: shake 0.5s ease; }
+.exercise-counter { font-size: 13px; color: var(--text-light); margin-bottom: 4px; }
+.exercise-type-badge.char_to_pinyin { background: #FFF3E0; color: #E65100; }
+.exercise-type-badge.pinyin_to_char { background: #E8F5E9; color: #2E7D32; }
+
+.read-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); }
+.read-sentence { font-size: 28px; font-weight: 700; line-height: 1.8; margin: 10px 0; }
+.read-char { display: inline-block; padding: 4px 8px; margin: 2px; border-radius: 8px; cursor: pointer; transition: var(--transition); }
+.read-char:hover { background: var(--accent); transform: scale(1.1); }
+.read-char.highlight { background: var(--primary-light); color: var(--primary); }
+.read-char.clicked { background: var(--green-light); color: #059669; animation: bounceIn 0.3s ease; }
+.read-hint { font-size: 14px; color: var(--text-light); margin-top: 16px; }
+
+/* 绘本阅读器 */
+.story-reader { animation: slideUp 0.4s ease; }
+.story-header { text-align: center; margin-bottom: 16px; }
+.story-title { font-size: 24px; font-weight: 800; color: var(--primary); }
+.story-page-container { position: relative; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); min-height: 200px; display: flex; flex-direction: column; }
+.story-page { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; text-align: center; animation: fadeIn 0.5s ease; }
+.story-text { font-size: 26px; font-weight: 700; line-height: 2.2; letter-spacing: 3px; }
+.story-review-label { font-size: 14px; color: var(--blue); font-weight: 600; margin-bottom: 8px; padding: 4px 12px; background: var(--blue-light); border-radius: 12px; }
+.story-new-label { font-size: 14px; color: var(--primary); font-weight: 600; margin-bottom: 8px; padding: 4px 12px; background: var(--primary-light); border-radius: 12px; }
+.story-page-nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--card-bg); border-top: 1px solid #F0F0F0; }
+
+/* 完成庆祝 */
+.celebration { text-align: center; padding: 40px 20px; animation: bounceIn 0.6s ease; }
+.celebration-emoji { font-size: 80px; margin-bottom: 16px; animation: float 2s ease-in-out infinite; }
+.celebration-title { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.celebration-subtitle { font-size: 16px; color: var(--text-light); margin-bottom: 24px; }
+.celebration-stars { font-size: 48px; margin-bottom: 24px; }
+.celebration-stars .star { display: inline-block; animation: starPop 0.5s ease forwards; opacity: 0; }
+.celebration-stars .star:nth-child(1) { animation-delay: 0.2s; }
+.celebration-stars .star:nth-child(2) { animation-delay: 0.5s; }
+.celebration-stars .star:nth-child(3) { animation-delay: 0.8s; }
+
+/* 反馈弹窗 */
+.feedback-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease; }
+.feedback-popup { background: var(--card-bg); border-radius: var(--radius); padding: 40px; text-align: center; box-shadow: var(--shadow-lg); animation: bounceIn 0.4s ease; max-width: 320px; width: 90%; }
+.feedback-emoji { font-size: 64px; margin-bottom: 16px; }
+.feedback-text { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.feedback-sub { font-size: 14px; color: var(--text-light); }
+
+/* 设置页 */
+.settings-section { background: var(--card-bg); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.settings-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.settings-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #F5F5F5; }
+.settings-item:last-child { border-bottom: none; }
+.settings-label { font-size: 15px; }
+.settings-desc { font-size: 13px; color: var(--text-light); margin-top: 2px; }
+.toggle { width: 52px; height: 28px; border-radius: 14px; background: #E0E0E0; position: relative; cursor: pointer; transition: var(--transition); }
+.toggle.active { background: var(--green); }
+.toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 50%; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: var(--transition); }
+.toggle.active::after { left: 26px; }
+
+/* 底部导航 */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-around; padding: 8px 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); z-index: 100; }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 16px; border-radius: 12px; cursor: pointer; transition: var(--transition); border: none; background: transparent; font-size: 12px; color: var(--text-light); }
+.nav-item.active { color: var(--primary); }
+.nav-item-icon { font-size: 24px; }
+.nav-item-label { font-weight: 600; }
+
+/* 响应式 */
+@media (max-width: 600px) {
+  .app-container { padding: 8px; padding-bottom: 70px; }
+  .home-title { font-size: 24px; }
+  .char-display { font-size: 64px; }
+  .char-pinyin { font-size: 20px; }
+  .char-meaning { font-size: 14px; }
+  .char-word-tag { font-size: 12px; padding: 3px 8px; }
+  .char-sentence { font-size: 14px; padding: 8px; }
+  .char-card { padding: 12px; }
+  .read-sentence { font-size: 24px; }
+  .story-text { font-size: 22px; }
+  .fill-sentence { font-size: 20px; }
+  .fill-option { width: 56px; height: 56px; font-size: 26px; }
+  .quiz-display { font-size: 48px; }
+  .quiz-display.quiz-pinyin { font-size: 30px; }
+  .quiz-option { font-size: 22px; padding: 10px; min-height: 48px; }
+  .progress-card { flex-direction: column; text-align: center; }
+  .learn-nav { gap: 3px; padding: 6px; }
+  .learn-nav-item { padding: 3px 6px; font-size: 11px; }
+  .btn { padding: 8px 14px; font-size: 13px; }
+  .page-header { padding: 8px 0; }
+  .page-title { font-size: 16px; }
+}
+@media (min-width: 601px) { .app-container { padding-bottom: 80px; } }
+
+.text-center { text-align: center; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-16 { margin-bottom: 16px; }
+.hidden { display: none !important; }
+  ruby { position: relative; display: inline-block; }
+  ruby rt { position: absolute; top: -1.2em; left: 50%; transform: translateX(-50%); font-size: 0.55em; color: var(--primary); font-weight: 700; white-space: nowrap; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="app-container" id="app">
+
+    <!-- 首页 -->
+    <div class="page active" id="page-home">
+      <div class="home-header">
+        <div class="home-logo">📚</div>
+        <h1 class="home-title">趣味识字乐园</h1>
+        <p class="home-subtitle">每天学7个字，轻松认1000字！每周50字，绘本天天复习</p>
+      </div>
+      <div class="progress-card" id="home-progress">
+        <div class="progress-icon">🏆</div>
+        <div class="progress-info">
+          <div class="progress-label">学习进度</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="home-progress-bar" style="width: 0%"></div>
+          </div>
+          <div class="progress-stats">
+            <span>📖 <span id="stat-weeks">0/20</span> 周</span>
+            <span>📝 <span id="stat-chars">0/1000</span> 字</span>
+            <span>⭐ <span id="stat-stars">0</span> 星</span>
+          </div>
+        </div>
+      </div>
+      <div id="level-list"></div>
+    </div>
+
+    <!-- 级别详情页 -->
+    <div class="page" id="page-level">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('home')">←</button>
+        <h2 class="page-title" id="level-title"></h2>
+      </div>
+      <div id="week-list"></div>
+    </div>
+
+    <!-- 周详情页（含天列表） -->
+    <div class="page" id="page-week">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('level')">←</button>
+        <h2 class="page-title" id="week-title"></h2>
+      </div>
+      <div id="day-list"></div>
+    </div>
+
+    <!-- 学习页 -->
+    <div class="page" id="page-learn">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('week')">←</button>
+        <h2 class="page-title" id="learn-title"></h2>
+      </div>
+      <div class="learn-nav" id="learn-nav"></div>
+      <div id="char-card-container"></div>
+      <div class="learn-actions" id="learn-actions"></div>
+    </div>
+
+    <!-- 练习页 -->
+    <div class="page" id="page-practice">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('learn')">←</button>
+        <h2 class="page-title">互动练习</h2>
+      </div>
+      <div class="exercise-container" id="exercise-container"></div>
+    </div>
+
+    <!-- 绘本阅读页 -->
+    <div class="page" id="page-story">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('practice')">←</button>
+        <h2 class="page-title">📖 绘本时间</h2>
+      </div>
+      <div class="story-reader" id="story-reader"></div>
+    </div>
+
+    <!-- 完成庆祝页 -->
+    <div class="page" id="page-complete">
+      <div class="celebration" id="celebration-content"></div>
+    </div>
+
+    <!-- 设置页 -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <button class="back-btn" onclick="navigateTo('home')">←</button>
+        <h2 class="page-title">设置</h2>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">🔊 音效</div>
+        <div class="settings-item">
+          <div><div class="settings-label">音效</div><div class="settings-desc">答题正确/错误时播放音效</div></div>
+          <div class="toggle active" id="toggle-sound" onclick="toggleSound()"></div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">📊 学习数据</div>
+        <div class="settings-item">
+          <div><div class="settings-label">重置学习进度</div><div class="settings-desc">清除所有学习记录，重新开始</div></div>
+          <button class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="resetProgress()">重置</button>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">ℹ️ 关于</div>
+        <div class="settings-item">
+          <div><div class="settings-label">趣味识字乐园 v2.0</div><div class="settings-desc">1000字分级识字阅读 · 每周50字 · 每日绘本复习</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 反馈弹窗 -->
+    <div class="feedback-overlay hidden" id="feedback-overlay" onclick="closeFeedback()">
+      <div class="feedback-popup" id="feedback-popup">
+        <div class="feedback-emoji" id="feedback-emoji"></div>
+        <div class="feedback-text" id="feedback-text"></div>
+        <div class="feedback-sub" id="feedback-sub"></div>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+      <button class="nav-item active" onclick="navigateTo('home')" data-nav="home">
+        <span class="nav-item-icon">🏠</span><span class="nav-item-label">首页</span>
+      </button>
+      <button class="nav-item" onclick="navigateTo('settings')" data-nav="settings">
+        <span class="nav-item-icon">⚙️</span><span class="nav-item-label">设置</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+// ==========================================
+// 字库数据（由Python脚本生成）
+// ==========================================
 const BOOK_DATA = {
   "levels": [
     {
@@ -102,7 +593,7 @@ const BOOK_DATA = {
               ],
               "reviewChars": [],
               "story": {
-                "title": "我的家",
+                "title": "去钓鱼",
                 "pages": [
                   {
                     "text": "今 天 是 快 乐 的 一 天 。",
@@ -369,7 +860,7 @@ const BOOK_DATA = {
                 }
               ],
               "story": {
-                "title": "上学路上",
+                "title": "种花",
                 "pages": [
                   {
                     "text": "我 们 来 学 新 字 啦 ！",
@@ -62989,7 +63480,6 @@ const BOOK_DATA = {
       ]
     }
   ]
-}
 };
 
 // ==========================================
@@ -63548,7 +64038,6 @@ function openDay(levelId, weekId, dayIndex) {
   const day = findDay(levelId, weekId, dayIndex);
   if (!day) return;
   state.charList = [];
-  day.reviewChars.forEach((c, i) => state.charList.push({ ...c, isReview: true, globalIndex: i }));
   day.newChars.forEach((c, i) => state.charList.push({ ...c, isReview: false, globalIndex: i }));
 
   navigateTo('learn');
@@ -63559,31 +64048,26 @@ function renderLearn() {
   if (!day) return;
   const status = ProgressManager.getDayStatus(state.currentLevel, state.currentWeek, state.currentDay);
 
-  document.getElementById('learn-title').textContent = day.dayName;
+  document.getElementById('learn-title').textContent = `${day.dayName}`;
 
   // 渲染学习导航
   const nav = document.getElementById('learn-nav');
   let navHtml = `<button class="learn-nav-item ${state.currentCharIndex === -1 ? 'active' : ''}" onclick="showCharOverview()">📋 总览</button>`;
-
-  // 复习字标签
-  if (day.reviewChars.length > 0) {
-    navHtml += `<button class="learn-nav-item review-tag" onclick="jumpToReviewStart()">🔄 复习${day.reviewChars.length}字</button>`;
-  }
 
   // 所有字
   state.charList.forEach((c, i) => {
     let cls = '';
     if (i === state.currentCharIndex) cls = 'active';
     else {
-      const charKey = c.isReview ? `r_${c.globalIndex}` : `n_${c.globalIndex}`;
+      const charKey = `n_${c.globalIndex}`;
       if (status.learnedChars.includes(charKey)) cls = 'completed';
     }
-    const style = c.isReview ? 'color: var(--blue);' : '';
+    const style = '';
     navHtml += `<button class="learn-nav-item ${cls}" style="${style}" onclick="showChar(${i})">${c.char}</button>`;
   });
 
   navHtml += `<button class="learn-nav-item ${status.exercisesDone.length >= day.exercises.length ? 'completed' : ''}" onclick="startPractice()">🎮 练习</button>`;
-  navHtml += `<button class="learn-nav-item ${status.storyRead ? 'completed' : ''}" onclick="navigateTo('story')" ${status.learnedChars.length < day.newChars.length ? 'disabled' : ''}>📖 绘本</button>`;
+  navHtml += `<button class="learn-nav-item ${status.storyRead ? 'completed' : ''}" onclick="navigateTo('story')">📖 绘本</button>`;
 
   nav.innerHTML = navHtml;
   renderCharCard();
@@ -63598,31 +64082,24 @@ function showCharOverview() {
     <div class="char-card">
       <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
       <h3 style="font-size: 24px; margin-bottom: 8px;">${day.dayName} 学习内容</h3>
-      ${day.reviewChars.length > 0 ? `
-        <div style="margin-bottom: 16px;">
-          <div style="font-size: 14px; color: var(--blue); font-weight: 600; margin-bottom: 8px;">🔄 复习字 (${day.reviewChars.length}个)</div>
-          <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-            ${day.reviewChars.map(c => `<div style="width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; background: var(--blue-light); color: var(--blue); cursor: pointer;" onclick="showChar(${state.charList.findIndex(x => x.char === c.char && x.isReview)})">${c.char}</div>`).join('')}
-          </div>
-        </div>` : ''}
       <div style="margin-bottom: 16px;">
         <div style="font-size: 14px; color: var(--primary); font-weight: 600; margin-bottom: 8px;">✨ 新字 (${day.newChars.length}个)</div>
         <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
           ${day.newChars.map((c, i) => `
             <div style="width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; cursor: pointer;
               ${status.learnedChars.includes(`n_${i}`) ? 'background: #D1FAE5; color: #059669;' : 'background: #FEE2E2; color: #DC2626;'}"
-              onclick="showChar(${state.charList.findIndex(x => x.char === c.char && !x.isReview)})"
+              onclick="showChar(${i})"
               onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
               ${c.char}
             </div>`).join('')}
         </div>
       </div>
-      <div style="font-size: 14px; color: var(--text-light);">已学 ${status.learnedChars.length}/${day.reviewChars.length + day.newChars.length} 个字</div>
+      <div style="font-size: 14px; color: var(--text-light);">已学 ${status.learnedChars.length}/${day.newChars.length} 个字</div>
     </div>`;
 
   document.getElementById('learn-actions').innerHTML = `
     <div></div>
-    <button class="btn btn-primary" onclick="showChar(${day.reviewChars.length > 0 ? 0 : 0})">开始学习 ➡️</button>
+    <button class="btn btn-primary" onclick="showChar(${0})">开始学习 ➡️</button>
     <div></div>`;
   updateLearnNav();
 }
@@ -63782,7 +64259,7 @@ function updateLearnNav() {
       else {
         const c = state.charList[charIdx];
         if (c) {
-          const charKey = c.isReview ? `r_${c.globalIndex}` : `n_${c.globalIndex}`;
+          const charKey = `n_${c.globalIndex}`;
           if (status.learnedChars.includes(charKey)) item.classList.add('completed');
         }
       }
@@ -64054,19 +64531,8 @@ function generateDynamicExercises(day) {
         if (cd.words) cd.words = fixWords(cd);
         const ch = cd.char;
         const py = cd.pinyin || '';
-        
-        // 1. 选字填空题（使用通顺的句子）
-        const fillTemplates = getFillTemplate(ch);
-        if (fillTemplates) {
-            exercises.push({
-                type: 'fill',
-                question: fillTemplates.question,
-                options: fillTemplates.options,
-                answer: ch
-            });
-        }
-        
-        // 2. 看字选拼音题
+
+        // 1. 看字选拼音题
         const pinyinOptions = generatePinyinOptions(cd, allCharData);
         if (pinyinOptions) {
             exercises.push({
@@ -65241,8 +65707,8 @@ function selectFillOption(el, selected, answer) {
   const blank = document.getElementById('fill-blank');
   if (blank.classList.contains('filled')) return;
   SoundManager.playClick(); blank.textContent = selected; blank.classList.add('filled');
-  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 1200); }, 500); }
-  else { el.classList.add('wrong'); SoundManager.playWrong(); setTimeout(() => { showFeedback('😅', '再想想', `正确答案是"${answer}"`); setTimeout(() => nextExercise(), 1500); }, 500); }
+  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 600); }, 300); }
+  else { el.classList.add('wrong'); SoundManager.playWrong(); setTimeout(() => { showFeedback('😅', '再想想', `正确答案是"${answer}"`); setTimeout(() => nextExercise(), 800); }, 300); }
 }
 
 // 看字选拼音
@@ -65273,10 +65739,10 @@ function selectQuizOption(el, selected, answer) {
   SoundManager.playClick();
   if (selected === answer) {
     el.classList.add('correct'); SoundManager.playCorrect();
-    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 1200); }, 500);
+    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 600); }, 300);
   } else {
     el.classList.add('wrong'); SoundManager.playWrong();
-    setTimeout(() => { showFeedback('😅', '再想想', `正确答案是"${answer}"`); setTimeout(() => nextExercise(), 1500); }, 500);
+    setTimeout(() => { showFeedback('😅', '再想想', `正确答案是"${answer}"`); setTimeout(() => nextExercise(), 800); }, 300);
   }
 }
 
@@ -65368,18 +65834,7 @@ function renderStory() {
   if (!day || !day.story) return;
   const status = ProgressManager.getDayStatus(state.currentLevel, state.currentWeek, state.currentDay);
 
-  if (status.learnedChars.length < day.newChars.length) {
-    document.getElementById('story-reader').innerHTML = `
-      <div class="celebration">
-        <div class="celebration-emoji">🔒</div>
-        <div class="celebration-title">绘本还没解锁</div>
-        <div class="celebration-subtitle">学完今天所有新字后，就可以读绘本啦！<br>已学 ${status.learnedChars.length}/${day.newChars.length} 个新字</div>
-        <button class="btn btn-primary mt-24" onclick="navigateTo('learn')">⬅️ 去学习</button>
-      </div>`;
-    return;
-  }
-
-  const story = day.story;
+const story = day.story;
   const totalPages = story.pages.length;
 
   // 按已学字比例排序绘本页面，优先显示已学字多的页面
@@ -65417,7 +65872,7 @@ function renderStory() {
   document.getElementById('story-reader').innerHTML = `
     <div class="story-header">
       <div class="story-title">📖 《${story.title}》</div>
-      ${day.reviewChars.length > 0 ? `<div style="font-size: 13px; color: var(--blue); margin-top: 4px;">📖 本绘本包含之前学过的字哦</div>` : ''}
+      <div style="font-size: 13px; color: var(--blue); margin-top: 4px;">📖 本绘本包含之前学过的字哦</div>
     </div>
     <div class="story-page-container">
       <div class="story-page" style="background: ${page.bg};">
