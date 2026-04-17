@@ -65765,6 +65765,7 @@ function clickReadChar(el) { el.classList.add('clicked'); SoundManager.playClick
 function completeReadExercise() { SoundManager.playCorrect(); showFeedback('🌟', '读得真好！', '你是个朗读小能手！'); setTimeout(() => nextExercise(), 1500); }
 
 function nextExercise() {
+  closeFeedback();
   ProgressManager.markExerciseDone(state.currentLevel, state.currentWeek, state.currentDay, state.currentExerciseIndex);
   state.currentExerciseIndex++;
   renderPractice();
