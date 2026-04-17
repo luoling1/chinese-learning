@@ -66806,20 +66806,17 @@ function renderWeek() {
     else if (status.learnedChars.length > 0) cardClass += ' current';
     else cardClass += ' unlocked';
 
-    const reviewCount = day.reviewChars.length;
     const newCount = day.newChars.length;
 
     return `
       <div class="${cardClass}" onclick="openDay('${state.currentLevel}', '${state.currentWeek}', ${dayIdx})">
         <div class="day-card-header">
           <div>
-            <div class="day-card-title">${day.dayName} · ${newCount}个新字${reviewCount > 0 ? ` + ${reviewCount}个复习字` : ''}</div>
+            <div class="day-card-title">${day.dayName}</div>
             <div class="day-card-info">${status.completed ? '✅ 已完成' : status.learnedChars.length > 0 ? `📖 已学${status.learnedChars.length}字` : '🔓 可以开始'}</div>
           </div>
         </div>
         <div class="day-card-chars">
-          ${day.reviewChars.slice(0, 5).map(c => `<span class="day-char-tag review">${c.char}</span>`).join('')}
-          ${reviewCount > 5 ? `<span class="day-char-tag review">+${reviewCount - 5}</span>` : ''}
           ${day.newChars.map(c => `<span class="day-char-tag ${status.learnedChars.includes(day.newChars.indexOf(c)) >= 0 ? 'learned' : ''}">${c.char}</span>`).join('')}
         </div>
       </div>`;
@@ -66852,7 +66849,7 @@ function renderLearn() {
   if (!day) return;
   const status = ProgressManager.getDayStatus(state.currentLevel, state.currentWeek, state.currentDay);
 
-  document.getElementById('learn-title').textContent = `${day.dayName} · ${day.newChars.length}个新字${day.reviewChars.length > 0 ? ` + ${day.reviewChars.length}个复习` : ''}`;
+  document.getElementById('learn-title').textContent = day.dayName;
 
   // 渲染学习导航
   const nav = document.getElementById('learn-nav');
@@ -68710,7 +68707,7 @@ function renderStory() {
   document.getElementById('story-reader').innerHTML = `
     <div class="story-header">
       <div class="story-title">📖 《${story.title}》</div>
-      ${day.reviewChars.length > 0 ? `<div style="font-size: 13px; color: var(--blue); margin-top: 4px;">🔄 本绘本包含 ${day.reviewChars.length} 个复习字 + ${day.newChars.length} 个新字</div>` : ''}
+      ${day.reviewChars.length > 0 ? `<div style="font-size: 13px; color: var(--blue); margin-top: 4px;">📖 本绘本包含之前学过的字哦</div>` : ''}
     </div>
     <div class="story-page-container">
       <div class="story-page" style="background: ${page.bg};">
