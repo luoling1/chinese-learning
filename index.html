@@ -63747,6 +63747,9 @@ function addPinyinToText(text, day) {
             } else {
                 result += `<ruby>${ch}<rt></rt></ruby>`;
             }
+        } else if (/[，。！？、；：]/.test(ch)) {
+            // 标点符号也包裹在 ruby 中，但拼音为空
+            result += `<ruby>${ch}<rt></rt></ruby>`;
         } else {
             result += ch;
         }
