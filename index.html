@@ -53632,11 +53632,13 @@ function renderFillExercise(exercise) {
 }
 
 function selectFillOption(el, selected, answer) {
+  if (state._answerLocked) return;
   const blank = document.getElementById('fill-blank');
   if (blank.classList.contains('filled')) return;
+  state._answerLocked = true;
   SoundManager.playClick(); blank.textContent = selected; blank.classList.add('filled');
-  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 600); }, 300); }
-  else { el.classList.add('wrong'); SoundManager.playWrong(); setTimeout(() => { showFeedback('😅', '再想想', `正确答案是"${answer}"`); setTimeout(() => nextExercise(), 800); }, 300); }
+  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => { state._answerLocked = false; nextExercise(); }, 600); }, 300); }
+  else { el.classList.add('wrong'); SoundManager.playWrong(); setTimeout(() => { showFeedback('😅', '再想想', `正确答案是"${answer}"`); setTimeout(() => { state._answerLocked = false; nextExercise(); }, 800); }, 300); }
 }
 
 // 看字选拼音
@@ -53663,14 +53665,16 @@ function renderPinyinToCharExercise(exercise) {
 
 // 通用选择题答案验证
 function selectQuizOption(el, selected, answer) {
+  if (state._answerLocked) return;
   if (el.parentElement.querySelector('.correct, .wrong')) return;
+  state._answerLocked = true;
   SoundManager.playClick();
   if (selected === answer) {
     el.classList.add('correct'); SoundManager.playCorrect();
-    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 600); }, 300);
+    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => { state._answerLocked = false; nextExercise(); }, 600); }, 300);
   } else {
     el.classList.add('wrong'); SoundManager.playWrong();
-    setTimeout(() => { showFeedback('😅', '再想想', `正确答案是"${answer}"`); setTimeout(() => nextExercise(), 800); }, 300);
+    setTimeout(() => { showFeedback('😅', '再想想', `正确答案是"${answer}"`); setTimeout(() => { state._answerLocked = false; nextExercise(); }, 800); }, 300);
   }
 }
 
