@@ -201,19 +201,6 @@ body::before {
 .char-stroke-hint { background: var(--orange-light); border-radius: var(--radius-sm); padding: 16px; margin-top: 16px; font-size: 15px; color: #9A4E00; line-height: 1.6; }
 .char-stroke-hint::before { content: '✏️ 怎么记这个字：'; display: block; font-weight: 700; margin-bottom: 8px; font-size: 16px; }
 
-/* 象形字演变区域 */
-.pictograph-section { background: linear-gradient(135deg, #FFF8E1, #FFECB3); border-radius: var(--radius-sm); padding: 14px; margin-top: 12px; text-align: center; }
-.pictograph-title { font-size: 13px; font-weight: 700; color: #F57C00; margin-bottom: 8px; }
-.pictograph-evolution { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
-.pictograph-stage { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.pictograph-char { font-size: 40px; line-height: 1.2; font-family: 'STLiti', 'KaiTi', 'SimSun', serif; }
-.pictograph-char.oracle { font-family: 'STLiti', 'KaiTi', serif; color: #8B4513; }
-.pictograph-char.seal { font-family: 'STFangsong', 'FangSong', serif; color: #A0522D; }
-.pictograph-char.modern { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; color: #2D3436; font-weight: 900; }
-.pictograph-label { font-size: 11px; color: #9E9E9E; }
-.pictograph-arrow { font-size: 20px; color: #FFB74D; }
-.pictograph-hint { margin-top: 8px; font-size: 13px; color: #795548; line-height: 1.5; background: rgba(255,255,255,0.6); padding: 8px; border-radius: 8px; }
-
 .char-sentence { background: var(--blue-light); border-radius: var(--radius-sm); padding: 10px; margin-top: 8px; font-size: 16px; color: #1E40AF; line-height: 1.5; }
 .char-sentence::before { content: '📖 例句：'; display: block; font-weight: 700; margin-bottom: 4px; font-size: 12px; color: var(--text-light); }
 
@@ -45596,190 +45583,10 @@ const BOOK_DATA = {
   ]
 };
 
-// ==========================================
-// 象形字数据
-// ==========================================
-const PICTOGRAPH_DATA = {
-  "人": { oracle: "🚶", seal: "亾", hint: "一个人站着的样子，两条腿走路" },
-  "大": { oracle: "🧍", seal: "𡘙", hint: "一个人张开双臂，表示很大" },
-  "小": { oracle: "🤏", seal: "尐", hint: "三个小点，表示很小" },
-  "口": { oracle: "👄", seal: "𠮷", hint: "一张张开的嘴巴" },
-  "手": { oracle: "✋", seal: "扌", hint: "一只张开的手掌，五个手指" },
-  "山": { oracle: "⛰️", seal: "屮", hint: "三座山峰连在一起" },
-  "水": { oracle: "🌊", seal: "氵", hint: "流动的河水，中间是水脉" },
-  "火": { oracle: "🔥", seal: "灬", hint: "火焰向上燃烧的样子" },
-  "土": { oracle: "🏔️", seal: "圥", hint: "地上长出小苗，表示土地" },
-  "木": { oracle: "🌳", seal: "朩", hint: "一棵树，上面是树枝，下面是树根" },
-  "一": { oracle: "➡️", seal: "弌", hint: "一根横线，表示一个" },
-  "二": { oracle: "➡️➡️", seal: "弍", hint: "两根横线，表示两个" },
-  "三": { oracle: "➡️➡️➡️", seal: "弎", hint: "三根横线，表示三个" },
-  "十": { oracle: "✚", seal: "拾", hint: "一根竖线穿过横线，表示十" },
-  "个": { oracle: "🧍", seal: "箇", hint: "一个人站着，竹字头" },
-  "日": { oracle: "☀️", seal: "曰", hint: "太阳的形状，中间一横是阳光" },
-  "月": { oracle: "🌙", seal: "𦜳", hint: "弯弯的月亮，里面有月牙" },
-  "天": { oracle: "☁️", seal: "兲", hint: "一个人头顶上方，表示天空" },
-  "上": { oracle: "⬆️", seal: "丄", hint: "一横上面加一短横，表示上面" },
-  "下": { oracle: "⬇️", seal: "丅", hint: "一横下面加一短横，表示下面" },
-  "牛": { oracle: "🐂", seal: "牜", hint: "牛头上有两只角" },
-  "羊": { oracle: "🐏", seal: "𦍌", hint: "羊头上有两只弯角" },
-  "鸟": { oracle: "🐦", seal: "鳥", hint: "一只小鸟，有羽毛和尾巴" },
-  "虫": { oracle: "🐛", seal: "䖵", hint: "一条蛇的样子，弯弯曲曲" },
-  "鱼": { oracle: "🐟", seal: "漁", hint: "一条鱼，有头有尾有鳞" },
-  "果": { oracle: "🍎", seal: "菓", hint: "树上结满了果实" },
-  "米": { oracle: "🍚", seal: "米", hint: "几粒米散落的样子" },
-  "竹": { oracle: "🎋", seal: "⺮", hint: "两片竹叶垂下来的样子" },
-  "禾": { oracle: "🌾", seal: "秂", hint: "稻谷成熟低头的样子" },
-  "瓜": { oracle: "🍈", seal: "瓠", hint: "藤上挂着一个瓜" },
-  "花": { oracle: "🌸", seal: "芲", hint: "草字头下面一朵花" },
-  "草": { oracle: "🌿", seal: "屮", hint: "两棵小草从地上长出来" },
-  "树": { oracle: "🌲", seal: "樹", hint: "木字旁，一棵大树" },
-  "叶": { oracle: "🍃", seal: "葉", hint: "口字旁，一片叶子" },
-  "风": { oracle: "🌬️", seal: "風", hint: "风从虫洞中吹过" },
-  "雨": { oracle: "🌧️", seal: "𠈲", hint: "天上落下雨滴" },
-  "雪": { oracle: "❄️", seal: "霏", hint: "雨字头下面是手，雪花飘落" },
-  "云": { oracle: "☁️", seal: "雲", hint: "两朵云飘在天上" },
-  "河": { oracle: "🏞️", seal: "河", hint: "三点水旁，一条河流" },
-  "湖": { oracle: "🏞️", seal: "湖", hint: "三点水旁，中间是古月" },
-  "海": { oracle: "🌊", seal: "海", hint: "三点水旁，每一条水流" },
-  "星": { oracle: "⭐", seal: "曐", hint: "日字上面是生，星星发光" },
-  "门": { oracle: "🚪", seal: "門", hint: "两扇门的样子" },
-  "车": { oracle: "🚗", seal: "車", hint: "两个轮子和一个车身" },
-  "书": { oracle: "📖", seal: "書", hint: "手拿笔写字的样子" },
-  "笔": { oracle: "🖊️", seal: "筆", hint: "竹字头下面是毛" },
-  "纸": { oracle: "📄", seal: "紙", hint: "绞丝旁，一张纸" },
-  "猫": { oracle: "🐱", seal: "貓", hint: "反犬旁，一只猫" },
-  "狗": { oracle: "🐶", seal: "狗", hint: "反犬旁，一只狗" },
-  "马": { oracle: "🐴", seal: "馬", hint: "一匹马，有四条腿和鬃毛" },
-  "鸡": { oracle: "🐔", seal: "雞", hint: "又字旁，一只鸡" },
-  "爸": { oracle: "👨", seal: "爸", hint: "父字头，爸爸" },
-  "妈": { oracle: "👩", seal: "媽", hint: "女字旁，妈妈" },
-  "红": { oracle: "🔴", seal: "紅", hint: "绞丝旁，红色" },
-  "黄": { oracle: "🟡", seal: "黃", hint: "田字中间，黄色" },
-  "蓝": { oracle: "🔵", seal: "藍", hint: "草字头，蓝色" },
-  "绿": { oracle: "🟢", seal: "綠", hint: "绞丝旁，绿色" },
-  "白": { oracle: "⚪", seal: "皛", hint: "太阳光很亮，白色" },
-  "黑": { oracle: "⚫", seal: "黒", hint: "像烟囱冒出的黑烟" },
-  "眼": { oracle: "👁️", seal: "眼", hint: "目字旁，一只眼睛" },
-  "耳": { oracle: "👂", seal: "耳", hint: "一只耳朵的形状" },
-  "鼻": { oracle: "👃", seal: "鼻", hint: "自字下面是鼻子" },
-  "头": { oracle: "🗣️", seal: "頭", hint: "大字上面两点，一个头" },
-  "脚": { oracle: "🦶", seal: "腳", hint: "月字旁，一只脚" },
-  "心": { oracle: "❤️", seal: "心", hint: "一颗心的形状" },
-  "饭": { oracle: "🍚", seal: "飯", hint: "食字旁，一碗饭" },
-  "菜": { oracle: "🥬", seal: "菜", hint: "草字头，一棵菜" },
-  "衣": { oracle: "👕", seal: "衣", hint: "衣服的形状" },
-  "裤": { oracle: "👖", seal: "褲", hint: "衣字旁，一条裤子" },
-  "帽": { oracle: "🧢", seal: "帽", hint: "巾字旁，一顶帽子" },
-  "鞋": { oracle: "👟", seal: "鞋", hint: "革字旁，一双鞋" },
-  "床": { oracle: "🛏️", seal: "牀", hint: "广字头，一张床" },
-  "桌": { oracle: "🪑", seal: "桌", hint: "卜字旁，一张桌子" },
-  "椅": { oracle: "💺", seal: "椅", hint: "木字旁，一把椅子" },
-  "杯": { oracle: "🥤", seal: "盃", hint: "木字旁，一个杯子" },
-  "碗": { oracle: "🥣", seal: "碗", hint: "石字旁，一个碗" },
-  "刀": { oracle: "🔪", seal: "刂", hint: "一把刀的形状" },
-  "灯": { oracle: "💡", seal: "燈", hint: "火字旁，一盏灯" },
-  "钱": { oracle: "💰", seal: "錢", hint: "金字旁，钱币" },
-  "球": { oracle: "⚽", seal: "毬", hint: "王字旁，一个球" },
-  "歌": { oracle: "🎵", seal: "歌", hint: "哥哥唱歌" },
-  "画": { oracle: "🎨", seal: "畫", hint: "田字中间，一幅画" },
-  "笑": { oracle: "😊", seal: "咲", hint: "竹字头下面像笑脸" },
-  "哭": { oracle: "😢", seal: "哭", hint: "两个口像眼睛流泪" },
-  "走": { oracle: "🚶", seal: "走", hint: "土字下面像脚在走" },
-  "跑": { oracle: "🏃", seal: "跑", hint: "足字旁，在跑步" },
-  "跳": { oracle: "🤸", seal: "跳", hint: "足字旁，在跳跃" },
-  "飞": { oracle: "✈️", seal: "飛", hint: "鸟张开翅膀飞翔" },
-  "坐": { oracle: "🧘", seal: "坐", hint: "两个人坐在土上" },
-  "站": { oracle: "🧍", seal: "站", hint: "立字旁，站着" },
-  "春": { oracle: "🌸", seal: "萅", hint: "三人看日出，春天来了" },
-  "夏": { oracle: "☀️", seal: "夏", hint: "一个人在烈日下，夏天" },
-  "秋": { oracle: "🍂", seal: "秌", hint: "禾字旁加火，秋天收获" },
-  "冬": { oracle: "❄️", seal: "冬", hint: "两点像雪花，冬天" },
-  "早": { oracle: "🌅", seal: "早", hint: "太阳升到草上面，早晨" },
-  "晚": { oracle: "🌆", seal: "晚", hint: "日字旁加免，晚上" },
-  "东": { oracle: "🌅", seal: "東", hint: "太阳从树木中升起，东方" },
-  "南": { oracle: "🧭", seal: "南", hint: "十字架指向南方" },
-  "西": { oracle: "🌇", seal: "西", hint: "鸟巢的样子，太阳西落" },
-  "北": { oracle: "🧭", seal: "北", hint: "两个人背对背，北方" },
-  "左": { oracle: "👈", seal: "左", hint: "左手拿着工具" },
-  "右": { oracle: "👉", seal: "右", hint: "右手拿着工具" },
-  "前": { oracle: "⏩", seal: "前", hint: "月亮在刀上面，前面" },
-  "后": { oracle: "⏪", seal: "後", hint: "一口人在后面" },
-  "王": { oracle: "👑", seal: "王", hint: "三横一竖，大王的权杖" },
-  "国": { oracle: "🏰", seal: "國", hint: "方框里面是玉，一个国家" },
-  "师": { oracle: "👨‍🏫", seal: "師", hint: "左边是短，右边是巾，老师" },
-  "生": { oracle: "🌱", seal: "生", hint: "土上长出小苗，生长" },
-  "友": { oracle: "🤝", seal: "友", hint: "两只手握在一起，朋友" },
-  "好": { oracle: "👍", seal: "好", hint: "女和子在一起，很好" },
-  "多": { oracle: "🔢", seal: "多", hint: "两个夕字，表示很多" },
-  "少": { oracle: "🔢", seal: "少", hint: "一个夕字加一点，表示少" },
-  "来": { oracle: "👉", seal: "來", hint: "木字中间加两点，走过来" },
-  "去": { oracle: "👋", seal: "去", hint: "土字下面是大，离开" },
-  "看": { oracle: "👀", seal: "看", hint: "手搭在眼睛上，看东西" },
-  "说": { oracle: "🗣️", seal: "說", hint: "言字旁，说话" },
-  "吃": { oracle: "😋", seal: "喫", hint: "口字旁，吃东西" },
-  "喝": { oracle: "🥤", seal: "喝", hint: "口字旁，喝水" },
-  "做": { oracle: "🔨", seal: "做", hint: "单人旁，做事情" },
-  "想": { oracle: "💭", seal: "想", hint: "心字底，在想事情" },
-  "学": { oracle: "📚", seal: "學", hint: "双手捧着知识，学习" },
-  "读": { oracle: "📖", seal: "讀", hint: "言字旁，读书" },
-  "写": { oracle: "✍️", seal: "寫", hint: "宝盖头下面，写字" },
-  "听": { oracle: "👂", seal: "聽", hint: "口字旁，听声音" },
-  "问": { oracle: "❓", seal: "問", hint: "门里面一张口，问问题" },
-  "答": { oracle: "💬", seal: "答", hint: "竹字头下面是合，回答" },
-  "知": { oracle: "🧠", seal: "知", hint: "矢字旁加口，知道" },
-  "会": { oracle: "🤝", seal: "會", hint: "人字头下面，会合" },
-  "能": { oracle: "💪", seal: "能", hint: "两个匕字加月，能力" },
-  "要": { oracle: "👆", seal: "要", hint: "西字下面是女，想要" },
-  "爱": { oracle: "❤️", seal: "愛", hint: "中间有心字，爱" },
-  "玩": { oracle: "🎮", seal: "玩", hint: "王字旁，玩耍" },
-  "用": { oracle: "🔧", seal: "用", hint: "中间一竖，使用" },
-  "找": { oracle: "🔍", seal: "找", hint: "提手旁，找东西" },
-  "给": { oracle: "🎁", seal: "給", hint: "绞丝旁，给东西" },
-  "买": { oracle: "🛒", seal: "買", hint: "头字底，买东西" },
-  "卖": { oracle: "🏪", seal: "賣", hint: "十字头加贝，卖东西" },
-  "开": { oracle: "🔓", seal: "開", hint: "两扇门打开的样子" },
-  "关": { oracle: "🔒", seal: "關", hint: "门里面有关，关门" },
-  "起": { oracle: "⬆️", seal: "起", hint: "走字旁，站起来" },
-  "睡": { oracle: "😴", seal: "睡", hint: "目字旁，睡觉" },
-  "快": { oracle: "⚡", seal: "快", hint: "竖心旁，很快" },
-  "慢": { oracle: "🐌", seal: "慢", hint: "竖心旁，很慢" },
-  "高": { oracle: "🏢", seal: "高", hint: "高高的楼台" },
-  "低": { oracle: "⬇️", seal: "低", hint: "单人旁加低，很低" },
-  "长": { oracle: "📏", seal: "長", hint: "一头长发，很长" },
-  "短": { oracle: "✂️", seal: "短", hint: "豆字旁，很短" },
-  "新": { oracle: "✨", seal: "新", hint: "斤字旁，新的" },
-  "旧": { oracle: "🏚️", seal: "舊", hint: "日字旁，旧的" },
-  "冷": { oracle: "🥶", seal: "冷", hint: "两点水旁，很冷" },
-  "热": { oracle: "🥵", seal: "熱", hint: "四点底，很热" },
-  "亮": { oracle: "💡", seal: "亮", hint: "上面是高，下面是几，亮" },
-  "暗": { oracle: "🌑", seal: "暗", hint: "日字旁，很暗" },
-  "安": { oracle: "🏠", seal: "安", hint: "宝盖头下面是女，安全" },
-  "全": { oracle: "✅", seal: "全", hint: "人字头下面是王，全部" },
-  "家": { oracle: "🏠", seal: "家", hint: "宝盖头下面是豕，家" },
-  "校": { oracle: "🏫", seal: "校", hint: "木字旁，学校" },
-  "店": { oracle: "🏪", seal: "店", hint: "广字头，一家店" },
-  "路": { oracle: "🛤️", seal: "路", hint: "足字旁，一条路" },
-  "桥": { oracle: "🌉", seal: "橋", hint: "木字旁，一座桥" },
-  "城": { oracle: "🏙️", seal: "城", hint: "土字旁，一座城" },
-  "村": { oracle: "🏘️", seal: "村", hint: "木字旁，一个村" },
-  "园": { oracle: "🏞️", seal: "園", hint: "大口框里面是元，公园" },
-  "我": { oracle: "🙋", seal: "我", hint: "手拿戈，表示自己" },
-  "你": { oracle: "🫵", seal: "你", hint: "单人旁，你" },
-  "他": { oracle: "🧑", seal: "他", hint: "单人旁加也，他" },
-  "她": { oracle: "👩", seal: "她", hint: "女字旁，她" },
-  "它": { oracle: "🐾", seal: "牠", hint: "宝盖头，它" },
-  "这": { oracle: "👉", seal: "這", hint: "走之旁，这里" },
-  "那": { oracle: "👈", seal: "那", hint: "右边是阝，那里" },
-  "是": { oracle: "✅", seal: "是", hint: "日字下面是正，对的" },
-  "不": { oracle: "❌", seal: "不", hint: "一横下面不出头，不" },
-  "有": { oracle: "✅", seal: "有", hint: "又字加月，有" },
-  "无": { oracle: "❌", seal: "無", hint: "像天字少一横，没有" },
-};
 
-function getPictograph(char) {
-  if (PICTOGRAPH_DATA[char]) return PICTOGRAPH_DATA[char];
-  return { oracle: char, seal: char, hint: `这个字"${char}"，多写几遍就记住了` };
-}
+
+
+
 
 // ==========================================
 // 进度管理
@@ -46354,26 +46161,6 @@ function renderCharCard() {
   const container = document.getElementById('char-card-container');
   container.innerHTML = `
     <div class="char-card">
-      <div class="pictograph-section">
-        <div class="pictograph-title">🔍 字形演变</div>
-        <div class="pictograph-evolution">
-          <div class="pictograph-stage">
-            <div class="pictograph-char oracle">${PICTOGRAPH_DATA[char.char] ? PICTOGRAPH_DATA[char.char].oracle : '📝'}</div>
-            <div class="pictograph-label">象形</div>
-          </div>
-          <div class="pictograph-arrow">→</div>
-          <div class="pictograph-stage">
-            <div class="pictograph-char seal">${PICTOGRAPH_DATA[char.char] ? PICTOGRAPH_DATA[char.char].seal : char.char}</div>
-            <div class="pictograph-label">古文</div>
-          </div>
-          <div class="pictograph-arrow">→</div>
-          <div class="pictograph-stage">
-            <div class="pictograph-char modern" style="font-size: 48px; animation: pulse 1.5s ease infinite;">${char.char}</div>
-            <div class="pictograph-label">今字</div>
-          </div>
-        </div>
-        <div class="pictograph-hint">💡 ${PICTOGRAPH_DATA[char.char] ? PICTOGRAPH_DATA[char.char].hint : '这个字很有趣哦！'}</div>
-      </div>
       <div class="char-pinyin">${char.pinyin}</div>
       <div class="char-display ${char.isReview ? 'review-char' : ''}" onclick="SoundManager.playClick()">${char.char}</div>
       <div class="char-meaning">${char.meaning}</div>
