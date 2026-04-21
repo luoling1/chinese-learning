@@ -64264,7 +64264,7 @@ const SoundManager = {
     osc.frequency.setValueAtTime(523, ctx.currentTime); osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1); osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
     gain.gain.setValueAtTime(0.3, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
     osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.4); } catch(e) {}
-    this.speak('恭喜你，回答正确！');
+    this.speak('太棒了！回答正确！');
   },
   playWrong() {
     try { const ctx = this.getCtx(); const osc = ctx.createOscillator(); const gain = ctx.createGain();
@@ -64272,14 +64272,14 @@ const SoundManager = {
     osc.frequency.setValueAtTime(200, ctx.currentTime); osc.frequency.setValueAtTime(150, ctx.currentTime + 0.15);
     gain.gain.setValueAtTime(0.3, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
     osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3); } catch(e) {}
-    this.speak('哦哦，不对哦，再试一次吧！');
+    this.speak('哎呀，不对哦，再想想吧！');
   },
   speak(text) {
     try {
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'zh-CN'; u.rate = 0.9; u.pitch = 1.1;
+        u.lang = 'zh-CN'; u.rate = 1.4; u.pitch = 1.5; u.volume = 1.0;
         speechSynthesis.speak(u);
       }
     } catch(e) {}
@@ -66201,7 +66201,7 @@ function selectFillOption(el, selected, answer) {
   state._answerLocked = true;
   const blank = document.getElementById('fill-blank');
   SoundManager.playClick(); blank.textContent = selected; blank.classList.add('filled');
-  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 600); }, 300); }
+  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 800); }, 300); }
   else {
     el.classList.add('wrong'); SoundManager.playWrong();
     setTimeout(() => {
@@ -66210,7 +66210,7 @@ function selectFillOption(el, selected, answer) {
         el.classList.remove('wrong');
         blank.textContent = '?'; blank.classList.remove('filled');
         state._answerLocked = false;
-      }, 1200);
+      }, 1500);
     }, 300);
   }
 }
@@ -66244,16 +66244,16 @@ function selectQuizOption(el, selected, answer) {
   SoundManager.playClick();
   if (selected === answer) {
     el.classList.add('correct'); SoundManager.playCorrect();
-    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 600); }, 300);
+    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 800); }, 300);
   } else {
     el.classList.add('wrong'); SoundManager.playWrong();
     setTimeout(() => {
       showFeedback('😅', '再想想', `正确答案是"${answer}"，再选一次吧！`);
-      // 清除错误标记，让用户重新选择
+      // 等语音和弹窗显示完后，自动清除错误标记让用户重选
       setTimeout(() => {
         el.classList.remove('wrong');
         state._answerLocked = false;
-      }, 1200);
+      }, 1500);
     }, 300);
   }
 }
