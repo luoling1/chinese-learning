@@ -64300,11 +64300,12 @@ const SoundManager = {
     try {
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
-        const charUtterance = new SpeechSynthesisUtterance(char);
-        charUtterance.lang = 'zh-CN';
-        charUtterance.rate = 0.7;
-        charUtterance.pitch = 1.2;
-        speechSynthesis.resume().then(() => { speechSynthesis.speak(charUtterance); });
+        // 读拼音
+        const pinyinUtterance = new SpeechSynthesisUtterance(pinyin);
+        pinyinUtterance.lang = 'zh-CN';
+        pinyinUtterance.rate = 0.8;
+        pinyinUtterance.pitch = 1.0;
+        speechSynthesis.resume().then(() => { speechSynthesis.speak(pinyinUtterance); });
       }
     } catch(e) {}
   },
