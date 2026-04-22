@@ -64322,24 +64322,14 @@ const SoundManager = {
   },
   playPinyin(pinyin, char) {
     try {
-      const ctx = this.getCtx();
       if ('speechSynthesis' in window) {
-        // 先朗读汉字
+        speechSynthesis.cancel();
         const charUtterance = new SpeechSynthesisUtterance(char);
         charUtterance.lang = 'zh-CN';
         charUtterance.rate = 0.7;
         charUtterance.pitch = 1.2;
-        speechSynthesis.speak(charUtterance);
+        speechSynthesis.resume().then(() => { speechSynthesis.speak(charUtterance); });
       }
-      // 播放提示音
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, ctx.currentTime);
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
-      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.15);
     } catch(e) {}
   },
 };
