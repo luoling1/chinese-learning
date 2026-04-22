@@ -64281,9 +64281,10 @@ const SoundManager = {
     try {
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
+        speechSynthesis.resume();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'zh-CN'; u.rate = 1.4; u.pitch = 1.5; u.volume = 1.0;
-        speechSynthesis.resume().then(() => { speechSynthesis.speak(u); });
+        speechSynthesis.speak(u);
       }
     } catch(e) {}
   },
@@ -64300,12 +64301,11 @@ const SoundManager = {
     try {
       if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
-        // 读拼音
-        const pinyinUtterance = new SpeechSynthesisUtterance(pinyin);
-        pinyinUtterance.lang = 'zh-CN';
-        pinyinUtterance.rate = 0.8;
-        pinyinUtterance.pitch = 1.0;
-        speechSynthesis.resume().then(() => { speechSynthesis.speak(pinyinUtterance); });
+        speechSynthesis.resume();
+        const u = new SpeechSynthesisUtterance(char);
+        u.lang = 'zh-CN';
+        u.rate = 0.8;
+        speechSynthesis.speak(u);
       }
     } catch(e) {}
   },
