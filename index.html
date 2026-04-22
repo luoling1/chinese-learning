@@ -64358,7 +64358,6 @@ const state = {
 // 页面导航
 // ==========================================
 function navigateTo(page) {
-  SoundManager.playClick();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(`page-${page}`).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(item => item.classList.toggle('active', item.dataset.nav === page));
@@ -64725,7 +64724,7 @@ function renderCharCard() {
   container.innerHTML = `
     <div class="char-card">
       <div class="char-pinyin">${char.pinyin}</div>
-      <div class="char-display ${char.isReview ? 'review-char' : ''}" onclick="SoundManager.playClick()">${char.char}</div>
+      <div class="char-display ${char.isReview ? 'review-char' : ''}">${char.char}</div>
       <div class="char-meaning">${char.meaning}</div>
       <div class="char-words">
         ${char.words.map(w => `<span class="char-word-tag">${w}</span>`).join('')}
@@ -66223,13 +66222,14 @@ function selectFillOption(el, selected, answer) {
   if (state._answerLocked) return;
   state._answerLocked = true;
   const blank = document.getElementById('fill-blank');
-  SoundManager.playClick(); blank.textContent = selected; blank.classList.add('filled');
-  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 800); }, 300); }
+  blank.textContent = selected; blank.classList.add('filled');
+  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => { closeFeedback(); nextExercise(); }, 800); }, 300); }
   else {
     el.classList.add('wrong'); SoundManager.playWrong();
     setTimeout(() => {
       showFeedback('😅', '再想想', `正确答案是"${answer}"，再选一次吧！`);
       setTimeout(() => {
+        closeFeedback();
         el.classList.remove('wrong');
         blank.textContent = '?'; blank.classList.remove('filled');
         state._answerLocked = false;
@@ -66264,16 +66264,16 @@ function renderPinyinToCharExercise(exercise) {
 function selectQuizOption(el, selected, answer) {
   if (state._answerLocked) return;
   state._answerLocked = true;
-  SoundManager.playClick();
   if (selected === answer) {
     el.classList.add('correct'); SoundManager.playCorrect();
-    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => nextExercise(), 800); }, 300);
+    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => { closeFeedback(); nextExercise(); }, 800); }, 300);
   } else {
     el.classList.add('wrong'); SoundManager.playWrong();
     setTimeout(() => {
       showFeedback('😅', '再想想', `正确答案是"${answer}"，再选一次吧！`);
-      // 等语音和弹窗显示完后，自动清除错误标记让用户重选
+      // 等语音说完后自动关闭弹窗，让用户直接重选
       setTimeout(() => {
+        closeFeedback();
         el.classList.remove('wrong');
         state._answerLocked = false;
       }, 1500);
@@ -66296,7 +66296,7 @@ function renderReadExercise(exercise) {
     </div>`;
 }
 
-function clickReadChar(el) { el.classList.add('clicked'); SoundManager.playClick(); }
+function clickReadChar(el) { el.classList.add('clicked'); }
 function completeReadExercise() { SoundManager.playCorrect(); showFeedback('🌟', '读得真好！', '你是个朗读小能手！'); setTimeout(() => nextExercise(), 1500); }
 
 function nextExercise() {
@@ -66445,7 +66445,6 @@ function closeFeedback() { document.getElementById('feedback-overlay').classList
 function toggleSound() {
   state.soundEnabled = !state.soundEnabled;
   document.getElementById('toggle-sound').classList.toggle('active', state.soundEnabled);
-  if (state.soundEnabled) SoundManager.playClick();
 }
 
 function resetProgress() {
