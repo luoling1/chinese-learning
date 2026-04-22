@@ -66198,14 +66198,10 @@ function selectFillOption(el, selected, answer) {
   else {
     el.classList.add('wrong'); SoundManager.playWrong();
     setTimeout(() => {
-      showFeedback('😅', '再想想', `正确答案是"${answer}"，再选一次吧！`);
-      setTimeout(() => {
-        closeFeedback();
-        el.classList.remove('wrong');
-        blank.textContent = '?'; blank.classList.remove('filled');
-        state._answerLocked = false;
-      }, 500);
-    }, 300);
+      el.classList.remove('wrong');
+      blank.textContent = '?'; blank.classList.remove('filled');
+      state._answerLocked = false;
+    }, 600);
   }
 }
 
@@ -66241,14 +66237,9 @@ function selectQuizOption(el, selected, answer) {
   } else {
     el.classList.add('wrong'); SoundManager.playWrong();
     setTimeout(() => {
-      showFeedback('😅', '再想想', `正确答案是"${answer}"，再选一次吧！`);
-      // 等语音说完后自动关闭弹窗，让用户直接重选
-      setTimeout(() => {
-        closeFeedback();
-        el.classList.remove('wrong');
-        state._answerLocked = false;
-      }, 500);
-    }, 300);
+      el.classList.remove('wrong');
+      state._answerLocked = false;
+    }, 600);
   }
 }
 
