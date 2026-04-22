@@ -64261,11 +64261,31 @@ function getLearnedRatio(text, learnedChars) {
 // 音效管理
 // ==========================================
 const SoundManager = {
+  ctx: null,
+  getCtx() {
+    if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+    if (this.ctx && this.ctx.state === 'suspended') { try { this.ctx.resume(); } catch(e) {} }
+    return this.ctx;
+  },
   playCorrect() {
-    this.speak('太棒了！回答正确！');
+    try { const ctx = this.getCtx(); if (!ctx) return;
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.15);
+    } catch(e) {}
   },
   playWrong() {
-    this.speak('哎呀，不对哦，再想想吧！');
+    try { const ctx = this.getCtx(); if (!ctx) return;
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine';
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.2);
+    } catch(e) {}
   },
   speak(text) {
     try {
@@ -66174,7 +66194,7 @@ function selectFillOption(el, selected, answer) {
   state._answerLocked = true;
   const blank = document.getElementById('fill-blank');
   blank.textContent = selected; blank.classList.add('filled');
-  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => { closeFeedback(); nextExercise(); }, 800); }, 300); }
+  if (selected === answer) { el.classList.add('correct'); SoundManager.playCorrect(); setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => { closeFeedback(); nextExercise(); }, 500); }, 200); }
   else {
     el.classList.add('wrong'); SoundManager.playWrong();
     setTimeout(() => {
@@ -66184,7 +66204,7 @@ function selectFillOption(el, selected, answer) {
         el.classList.remove('wrong');
         blank.textContent = '?'; blank.classList.remove('filled');
         state._answerLocked = false;
-      }, 800);
+      }, 500);
     }, 300);
   }
 }
@@ -66217,7 +66237,7 @@ function selectQuizOption(el, selected, answer) {
   state._answerLocked = true;
   if (selected === answer) {
     el.classList.add('correct'); SoundManager.playCorrect();
-    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => { closeFeedback(); nextExercise(); }, 800); }, 300);
+    setTimeout(() => { showFeedback('👍', '答对了！', '你真聪明！'); setTimeout(() => { closeFeedback(); nextExercise(); }, 500); }, 200);
   } else {
     el.classList.add('wrong'); SoundManager.playWrong();
     setTimeout(() => {
@@ -66227,7 +66247,7 @@ function selectQuizOption(el, selected, answer) {
         closeFeedback();
         el.classList.remove('wrong');
         state._answerLocked = false;
-      }, 800);
+      }, 500);
     }, 300);
   }
 }
