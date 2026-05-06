@@ -63308,6 +63308,11 @@ function openDay(levelId, weekId, dayIndex) {
   const day = findDay(levelId, weekId, dayIndex);
   if (!day) return;
   state.charList = [];
+  // 先添加复习字
+  if (day.reviewChars) {
+    day.reviewChars.forEach((c, i) => state.charList.push({ ...c, isReview: true, globalIndex: i }));
+  }
+  // 再添加新字
   day.newChars.forEach((c, i) => state.charList.push({ ...c, isReview: false, globalIndex: i }));
 
   navigateTo('learn');
@@ -63329,16 +63334,18 @@ function renderLearn() {
   const nav = document.getElementById('learn-nav');
   let navHtml = `<button class="learn-nav-item ${state.currentCharIndex === -1 ? 'active' : ''}" onclick="showCharOverview()">📋 总览</button>`;
 
-  // 所有字
-  state.charList.forEach((c, i) => {
+  // 只显示新字（不显示复习字）
+  day.newChars.forEach((c, i) => {
+    // 计算在charList中的实际索引（复习字数量 + i）
+    const actualIndex = (day.reviewChars ? day.reviewChars.length : 0) + i;
     let cls = '';
-    if (i === state.currentCharIndex) cls = 'active';
+    if (actualIndex === state.currentCharIndex) cls = 'active';
     else {
       const charKey = `n_${c.globalIndex}`;
       if (status.learnedChars.includes(charKey)) cls = 'completed';
     }
     const style = '';
-    navHtml += `<button class="learn-nav-item ${cls}" style="${style}" onclick="showChar(${i})">${c.char}</button>`;
+    navHtml += `<button class="learn-nav-item ${cls}" style="${style}" onclick="showChar(${actualIndex})">${c.char}</button>`;
   });
 
   navHtml += `<button class="learn-nav-item ${status.exercisesDone.length >= generateDynamicExercises(day).length ? 'completed' : ''}" onclick="startPractice()">🎮 练习</button>`;
