@@ -63317,6 +63317,11 @@ function renderLearn() {
   const day = findDay(state.currentLevel, state.currentWeek, state.currentDay);
   if (!day) return;
   const status = ProgressManager.getDayStatus(state.currentLevel, state.currentWeek, state.currentDay);
+  
+  // 初始化选中的字（默认第一个）
+  if (!state.selectedChar && state.charList && state.charList.length > 0) {
+    state.selectedChar = state.charList[0].char;
+  }
 
   document.getElementById('learn-title').textContent = `${day.dayName}`;
 
@@ -63379,6 +63384,10 @@ function jumpToReviewStart() {
 
 function showChar(index) {
   state.currentCharIndex = index;
+  // 设置当前选中的字，用于绘本高亮
+  if (state.charList && state.charList[index]) {
+    state.selectedChar = state.charList[index].char;
+  }
   renderLearn();
 }
 
@@ -65107,6 +65116,10 @@ function addPinyinToText(text, day) {
     // 获取当天新学的字（用于高亮）
     const newChars = day.newChars ? day.newChars.map(c => typeof c === 'object' ? c.char : c) : [];
     
+    // 获取当前选中的字（如果有），优先高亮当前选中的字
+    const selectedChar = state.selectedChar || '';
+    const highlightChar = selectedChar || (newChars.length > 0 ? newChars[0] : '');
+    
     const extraPinyin = {"一起": "yìqǐ", "上": "shàng", "下": "xià", "丛": "cóng", "丫": "yā", "中": "zhōng", "丰": "fēng", "丹": "dān", "为什么": "wèishénme", "义": "yì", "乌": "wū", "乘": "chéng", "乡": "xiāng", "乱": "luàn", "互": "hù", "享": "xiǎng", "什么": "shénme", "从": "cóng", "仔细": "zǐxì", "任": "rèn", "份": "fèn", "伍": "wǔ", "休": "xiū", "会": "huì", "伞": "sǎn", "伟": "wěi", "传": "chuán", "伸": "shēn", "似": "sì", "但是": "dànshì", "使": "shǐ", "修": "xiū", "倒": "dǎo", "候": "hòu", "借": "jiè", "做": "zuò", "停": "tíng", "傲": "ào", "共": "gòng", "关": "guān", "其实": "qíshí", "再": "zài", "农": "nóng", "决": "jué", "凛": "lǐn", "凰": "huáng", "凳": "dèng", "切": "qiè", "列": "liè", "刚刚": "gānggāng", "刮": "guā", "到": "dào", "刻": "kè", "前": "qián", "助": "zhù", "努": "nǔ", "努力": "nǔlì", "勃": "bó", "勇敢": "yǒnggǎn", "升": "shēng", "华": "huá", "卫": "wèi", "危险": "wēixiǎn", "厉": "lì", "厌": "yàn", "厦": "shà", "去": "qù", "取": "qǔ", "叠": "dié", "句": "jù", "只有": "zhǐyǒu", "只要": "zhǐyào", "叫": "jiào", "叭": "bā", "叮": "dīng", "可以": "kěyǐ", "可爱": "kěài", "右": "yòu", "吃": "chī", "同学": "tóngxué", "后": "hòu", "吧": "ba", "听": "tīng", "吹": "chuī", "呀": "yā", "告": "gào", "呢": "ne", "呼": "hū", "和": "hé", "咔": "kā", "咕": "gū", "咚": "dōng", "哪": "nǎ", "哭": "kū", "唱": "chàng", "啊": "a", "善良": "shànliáng", "喇": "lǎ", "喝": "hē", "喧": "xuān", "嘟": "dū", "回": "huí", "因为": "yīnwèi", "困难": "kùnnán", "在": "zài", "坐": "zuò", "培": "péi", "塘": "táng", "壮": "zhuàng", "壳": "ké", "处": "chù", "复杂": "fùzá", "外": "wài", "多": "duō", "够": "gòu", "大": "dà", "大家": "dàjiā", "夸": "kuā", "奇": "qí", "契": "qì", "奔": "bēn", "好": "hǎo", "如果": "rúguǒ", "妈妈": "māmā", "妙": "miào", "始": "shǐ", "姬": "jī", "威": "wēi", "娃": "wá", "存": "cún", "孩": "hái", "安全": "ānquán", "完": "wán", "官": "guān", "容易": "róngyì", "寂": "jì", "寞": "mò", "察": "chá", "对": "duì", "小": "xiǎo", "少": "shǎo", "尝": "cháng", "屏": "píng", "岁": "suì", "左": "zuǒ", "已经": "yǐjīng", "巷": "xiàng", "帮": "bāng", "幅": "fú", "幕": "mù", "干净": "gānjìng", "幸福": "xìngfú", "庭": "tíng", "开": "kāi", "开心": "kāixīn", "弃": "qì", "弯": "wān", "弹": "tán", "当然": "dāngrán", "往": "wǎng", "待": "dài", "忆": "yì", "忍": "rěn", "快乐": "kuàilè", "快快": "kuàikuài", "怎": "zěn", "怎么": "zěnme", "悄悄": "qiāoqiāo", "惜": "xī", "惯": "guàn", "想": "xiǎng", "愉": "yú", "慢慢": "mànmàn", "戏": "xì", "或者": "huòzhě", "战": "zhàn", "戴": "dài", "户": "hù", "所以": "suǒyǐ", "才": "cái", "扎": "zhā", "扫": "sǎo", "扬": "yáng", "把": "bǎ", "抱": "bào", "拍": "pāi", "招": "zhāo", "拥": "yōng", "择": "zé", "拾": "shí", "持": "chí", "按": "àn", "挑": "tiāo", "挡": "dǎng", "挤": "jǐ", "捂": "wǔ", "探": "tàn", "控": "kòng", "摆": "bǎi", "摇": "yáo", "摊": "tān", "摸": "mō", "播": "bō", "擦": "cā", "改": "gǎi", "散": "sàn", "整齐": "zhěngqí", "旁": "páng", "旅": "lǚ", "映": "yìng", "晒": "shài", "普通": "pǔtōng", "景": "jǐng", "晴": "qíng", "晾": "liàng", "暑": "shǔ", "替": "tì", "朋友": "péngyǒu", "朗": "lǎng", "望": "wàng", "末": "mò", "李": "lǐ", "来": "lái", "果然": "guǒrán", "栋": "dòng", "栽": "zāi", "案": "àn", "梦": "mèng", "棉": "mián", "榜": "bǎng", "款": "kuǎn", "歌": "gē", "正在": "zhèngzài", "母": "mǔ", "永": "yǒng", "沛": "pèi", "泡": "pào", "注": "zhù", "泰": "tài", "浅": "qiǎn", "浇": "jiāo", "测": "cè", "浪": "làng", "涂": "tú", "温暖": "wēnnuǎn", "源": "yuán", "溪": "xī", "滋": "zī", "滚": "gǔn", "满": "mǎn", "滩": "tān", "滴": "dī", "漂亮": "piàoliang", "澡": "zǎo", "炒": "chǎo", "点": "diǎn", "炼": "liàn", "煌": "huáng", "照": "zhào", "煮": "zhǔ", "熊": "xióng", "熟": "shú", "爱": "ài", "爸爸": "bàba", "物": "wù", "特别": "tèbié", "状": "zhuàng", "玩": "wán", "现": "xiàn", "玻": "bō", "珍": "zhēn", "璃": "lí", "瓢": "piáo", "盛": "shèng", "看": "kàn", "真": "zhēn", "眯": "mī", "睡": "shuì", "矩": "jǔ", "砂": "shā", "础": "chǔ", "确": "què", "祖": "zǔ", "秘": "mì", "秩": "zhì", "稼": "jià", "穿": "chuān", "站": "zhàn", "章": "zhāng", "端": "duān", "笑": "xiào", "笼": "lóng", "筋": "jīn", "筒": "tǒng", "简单": "jiǎndān", "粘": "zhān", "索": "suǒ", "繁": "fán", "约": "yuē", "终": "zhōng", "终于": "zhōngyú", "绒": "róng", "绕": "rào", "给": "gěi", "继": "jì", "续": "xù", "维": "wéi", "罕": "hǎn", "美丽": "měilì", "翅": "chì", "翻": "fān", "老师": "lǎoshī", "而且": "érqiě", "耐": "nài", "耕": "gēng", "聪明": "cōngmíng", "能": "néng", "脆": "cuì", "脸": "liǎn", "自己": "zìjǐ", "臭": "chòu", "至": "zhì", "致": "zhì", "舀": "yǎo", "舒": "shū", "舞": "wǔ", "荡": "dàng", "莫": "mò", "莲": "lián", "萤": "yíng", "营": "yíng", "落": "luò", "蔬": "shū", "虽然": "suīrán", "蚂": "mǎ", "蛋": "dàn", "蜗": "wō", "螃": "páng", "衡": "héng", "被": "bèi", "装": "zhuāng", "要": "yào", "见": "jiàn", "览": "lǎn", "觉": "jué", "解": "jiě", "认真": "rènzhēn", "让": "ràng", "训": "xùn", "讲": "jiǎng", "许": "xǔ", "证": "zhèng", "识": "shí", "诉": "sù", "说": "shuō", "谢": "xiè", "谷": "gǔ", "责": "zé", "贴": "tiē", "赏": "shǎng", "赛": "sài", "走": "zǒu", "趣": "qù", "跑": "pǎo", "踩": "cǎi", "蹦": "bèng", "轨": "guǐ", "转": "zhuǎn", "轰": "hōng", "轻轻": "qīngqīng", "辉": "huī", "辛": "xīn", "辣": "là", "辽": "liáo", "还是": "háishì", "这个": "zhège", "适": "shì", "选": "xuǎn", "逐": "zhú", "遮": "zhē", "遵": "zūn", "那个": "nàge", "部": "bù", "配": "pèi", "醋": "cù", "采": "cǎi", "里": "lǐ", "重要": "zhòngyào", "钓": "diào", "错": "cuò", "锻": "duàn", "闪": "shǎn", "闻": "wén", "阔": "kuò", "阻": "zǔ", "际": "jì", "除了": "chúle", "陵": "líng", "雅": "yǎ", "雕": "diāo", "雾": "wù", "非常": "fēicháng", "靴": "xuē", "页": "yè", "顾": "gù", "颗": "kē", "飘": "piāo", "飞": "fēi", "首": "shǒu", "馨": "xīn", "马上": "mǎshàng", "驶": "shǐ", "驼": "tuó", "驾": "jià", "骄": "jiāo", "骆": "luò", "骨": "gǔ", "高兴": "gāoxìng", "鲜": "xiān", "麻": "má", "默": "mò", "懒": "lǎn", "久": "jiǔ", "谊": "yì", "懂": "dǒng", "独": "dú", "挚": "zhì", "尚": "shàng", "淌": "tǎng", "淘": "táo", "烁": "shuò", "愿": "yuàn", "烦": "fán", "恼": "nǎo", "陪": "péi", "耍": "shuǎ", "胜": "shèng", "惠": "huì", "澈": "chè", "底": "dǐ", "晃": "huàng", "耀": "yào", "诚": "chéng", "守": "shǒu", "勤": "qín", "劳": "láo", "俭": "jiǎn", "谦": "qiān", "虚": "xū", "随": "suí", "奋": "fèn", "仪": "yí", "眨": "zhǎ", "艳": "yàn", "奥": "ào", "敞": "chǎng", "坏": "huài"};
     Object.assign(pinyinMap, extraPinyin);
 
@@ -65114,8 +65127,9 @@ function addPinyinToText(text, day) {
     let result = '';
     for (let i = 0; i < text.length; i++) {
         const ch = text[i];
-        const isNewChar = newChars.includes(ch);
-        const className = isNewChar ? ' class="new-char"' : '';
+        // 只高亮当前选中的字（或默认第一个新字）
+        const isHighlightChar = ch === highlightChar;
+        const className = isHighlightChar ? ' class="new-char"' : '';
         if (/[\u4e00-\u9fff]/.test(ch)) {
             if (pinyinMap[ch]) {
                 result += `<ruby${className}>${ch}<rt>${pinyinMap[ch]}</rt></ruby>`;
