@@ -191,9 +191,12 @@ body::before {
 
 /* 汉字卡片 */
 .char-card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow-lg); animation: bounceIn 0.5s ease; }
-.char-display { font-size: 80px; font-weight: 900; color: var(--primary); line-height: 1.1; margin: 6px 0; text-shadow: 3px 3px 0 rgba(255,107,107,0.1); cursor: pointer; transition: var(--transition); }
+.char-display-wrapper { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 6px 0; }
+.char-display { font-size: 80px; font-weight: 900; color: var(--primary); line-height: 1.1; text-shadow: 3px 3px 0 rgba(255,107,107,0.1); cursor: pointer; transition: var(--transition); }
 .char-display:hover { transform: scale(1.05); }
 .char-display.review-char { color: var(--blue); }
+.char-image { width: 120px; height: 120px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.char-image img { width: 100%; height: 100%; object-fit: cover; }
 .char-pinyin { font-size: 28px; color: var(--primary); font-weight: 700; margin-bottom: 2px; letter-spacing: 2px; }
 .char-meaning { font-size: 16px; color: var(--text-light); margin-bottom: 8px; }
 .char-words { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
@@ -319,7 +322,9 @@ body::before {
 @media (max-width: 600px) {
   .app-container { padding: 8px; padding-bottom: 70px; }
   .home-title { font-size: 24px; }
+  .char-display-wrapper { flex-direction: column; gap: 12px; }
   .char-display { font-size: 64px; }
+  .char-image { width: 100px; height: 100px; }
   .char-pinyin { font-size: 24px; }
   .char-meaning { font-size: 14px; }
   .char-word-tag { font-size: 12px; padding: 3px 8px; }
@@ -63502,10 +63507,17 @@ function renderCharCard() {
   }
 
   const container = document.getElementById('char-card-container');
+  // 形象图路径（如果存在）
+  const charImagePath = `char_images/${char.char}.jpg`;
+  const hasImage = true; // 假设所有字都有形象图（分批生成中）
+  
   container.innerHTML = `
     <div class="char-card">
       <div class="char-pinyin">${char.pinyin}</div>
-      <div class="char-display ${char.isReview ? 'review-char' : ''}">${char.char}</div>
+      <div class="char-display-wrapper">
+        <div class="char-display ${char.isReview ? 'review-char' : ''}">${char.char}</div>
+        ${hasImage ? `<div class="char-image"><img src="${charImagePath}" alt="${char.char}" onerror="this.style.display='none'"></div>` : ''}
+      </div>
       <div class="char-meaning">${char.meaning}</div>
       <div class="char-words">
         ${char.words.map(w => `<span class="char-word-tag">${w}</span>`).join('')}
