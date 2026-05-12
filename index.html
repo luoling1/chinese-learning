@@ -63525,7 +63525,8 @@ function renderCharCard() {
       ? `<button class="btn btn-accent" onclick="startPractice()">🎮 开始练习</button>`
       : `<button class="btn btn-primary" onclick="nextChar()">下一个 ➡️</button>`}`;
 
-  setTimeout(() => { SoundManager.playPinyin(char.pinyin, char.char); }, 300);
+  // 自动朗读已禁用
+  // setTimeout(() => { SoundManager.playPinyin(char.pinyin, char.char); }, 300);
   updateLearnNav();
 }
 
