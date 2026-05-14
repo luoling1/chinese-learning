@@ -63308,14 +63308,44 @@ function openDay(levelId, weekId, dayIndex) {
   const day = findDay(levelId, weekId, dayIndex);
   if (!day) return;
   state.charList = [];
+  
+  // 动态计算复习字：只复习前一天学过的字
+  const reviewChars = getPreviousDayLearnedChars(levelId, weekId, dayIndex);
+  
   // 先添加复习字
-  if (day.reviewChars) {
-    day.reviewChars.forEach((c, i) => state.charList.push({ ...c, isReview: true, globalIndex: i }));
+  if (reviewChars && reviewChars.length > 0) {
+    reviewChars.forEach((c, i) => state.charList.push({ ...c, isReview: true, globalIndex: i }));
   }
   // 再添加新字
   day.newChars.forEach((c, i) => state.charList.push({ ...c, isReview: false, globalIndex: i }));
 
   navigateTo('learn');
+}
+
+// 获取前一天学过的字（用于复习）
+function getPreviousDayLearnedChars(levelId, weekId, dayIndex) {
+  // 如果是第一天，没有复习字
+  if (dayIndex <= 0) return [];
+  
+  const prevDay = findDay(levelId, weekId, dayIndex - 1);
+  if (!prevDay) return [];
+  
+  const prevStatus = ProgressManager.getDayStatus(levelId, weekId, dayIndex - 1);
+  if (!prevStatus || !prevStatus.learnedChars || prevStatus.learnedChars.length === 0) return [];
+  
+  // 获取前一天学过的字（只返回已学过的）
+  const learnedChars = [];
+  prevStatus.learnedChars.forEach(charKey => {
+    // charKey格式为 "n_0", "n_1" 等
+    if (charKey.startsWith('n_')) {
+      const idx = parseInt(charKey.split('_')[1]);
+      if (prevDay.newChars[idx]) {
+        learnedChars.push(prevDay.newChars[idx]);
+      }
+    }
+  });
+  
+  return learnedChars;
 }
 
 function renderLearn() {
@@ -63334,18 +63364,50 @@ function renderLearn() {
   const nav = document.getElementById('learn-nav');
   let navHtml = `<button class="learn-nav-item ${state.currentCharIndex === -1 ? 'active' : ''}" onclick="showCharOverview()">📋 总览</button>`;
 
-  // 只显示新字（不显示复习字）
-  day.newChars.forEach((c, i) => {
-    // 计算在charList中的实际索引（复习字数量 + i）
-    const actualIndex = (day.reviewChars ? day.reviewChars.length : 0) + i;
+  // 显示所有字：复习字（蓝色）+ 新字（红色）
+  state.charList.forEach((charObj, index) => {
     let cls = '';
-    if (actualIndex === state.currentCharIndex) cls = 'active';
-    else {
-      const charKey = `n_${c.globalIndex}`;
-      if (status.learnedChars.includes(charKey)) cls = 'completed';
+    let style = '';
+    
+    // 判断是否是当前选中的字
+    if (index === state.currentCharIndex) {
+      cls = 'active';
+    } else {
+      // 判断字是否已学过
+      const charKey = charObj.isReview ? `r_${charObj.globalIndex}` : `n_${charObj.globalIndex}`;
+      if (status.learnedChars.includes(charKey)) {
+        cls = 'completed';
+      }
     }
-    const style = '';
-    navHtml += `<button class="learn-nav-item ${cls}" style="${style}" onclick="showChar(${actualIndex})">${c.char}</button>`;
+    
+    // 复习字显示蓝色，新字显示红色
+    if (charObj.isReview) {
+      // 复习字 - 蓝色
+      if (index === state.currentCharIndex) {
+        // 当前选中的复习字 - 蓝色背景
+        style = 'background: var(--blue); border-color: var(--blue); color: white;';
+      } else if (status.learnedChars.includes(`r_${charObj.globalIndex}`)) {
+        // 已学过的复习字 - 浅蓝色
+        style = 'background: var(--blue-light); border-color: var(--blue); color: #2563EB;';
+      } else {
+        // 未学的复习字 - 蓝色边框
+        style = 'background: var(--blue-light); border-color: var(--blue); color: #2563EB;';
+      }
+    } else {
+      // 新字 - 红色
+      if (index === state.currentCharIndex) {
+        // 当前选中的新字 - 红色背景（active样式已处理）
+        style = '';
+      } else if (status.learnedChars.includes(`n_${charObj.globalIndex}`)) {
+        // 已学过的新字 - 绿色（表示已完成）
+        style = '';
+      } else {
+        // 未学的新字 - 红色边框
+        style = 'background: var(--primary-light); border-color: var(--primary); color: var(--primary);';
+      }
+    }
+    
+    navHtml += `<button class="learn-nav-item ${cls}" style="${style}" onclick="showChar(${index})">${charObj.char}</button>`;
   });
 
   navHtml += `<button class="learn-nav-item ${status.exercisesDone.length >= generateDynamicExercises(day).length ? 'completed' : ''}" onclick="startPractice()">🎮 练习</button>`;
@@ -63360,22 +63422,44 @@ function showCharOverview() {
   const day = findDay(state.currentLevel, state.currentWeek, state.currentDay);
   const status = ProgressManager.getDayStatus(state.currentLevel, state.currentWeek, state.currentDay);
 
+  // 分离复习字和新字
+  const reviewChars = state.charList.filter(c => c.isReview);
+  const newChars = state.charList.filter(c => !c.isReview);
+
   document.getElementById('char-card-container').innerHTML = `
     <div class="char-card">
       <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
       <h3 style="font-size: 24px; margin-bottom: 8px;">${day.dayName} 学习内容</h3>
-      <div style="margin-bottom: 16px;">
+      
+      ${reviewChars.length > 0 ? `
+      <div style="margin-bottom: 12px;">
+        <div style="font-size: 14px; color: var(--blue); margin-bottom: 8px;">🔵 复习字（${reviewChars.length}个）</div>
         <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-          ${day.newChars.map((c, i) => `
+          ${reviewChars.map((c, i) => `
             <div style="width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; cursor: pointer;
-              ${status.learnedChars.includes(`n_${i}`) ? 'background: #D1FAE5; color: #059669;' : 'background: #FEE2E2; color: #DC2626;'}"
-              onclick="showChar(${i})"
+              background: var(--blue-light); color: #2563EB; border: 2px solid var(--blue);"
+              onclick="showChar(${state.charList.indexOf(c)})"
               onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
               ${c.char}
             </div>`).join('')}
         </div>
       </div>
-      <div style="font-size: 14px; color: var(--text-light);">已学 ${status.learnedChars.length}/${day.newChars.length} 个字</div>
+      ` : ''}
+      
+      <div style="margin-bottom: 16px;">
+        <div style="font-size: 14px; color: var(--primary); margin-bottom: 8px;">🔴 新字（${newChars.length}个）</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+          ${newChars.map((c, i) => `
+            <div style="width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; cursor: pointer;
+              ${status.learnedChars.includes(`n_${c.globalIndex}`) ? 'background: #D1FAE5; color: #059669; border: 2px solid var(--green);' : 'background: var(--primary-light); color: var(--primary); border: 2px solid var(--primary);'}"
+              onclick="showChar(${state.charList.indexOf(c)})"
+              onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+              ${c.char}
+            </div>`).join('')}
+        </div>
+      </div>
+      
+      <div style="font-size: 14px; color: var(--text-light);">已学 ${status.learnedChars.filter(k => k.startsWith('n_')).length}/${newChars.length} 个新字</div>
     </div>`;
 
   document.getElementById('learn-actions').innerHTML = `
@@ -63538,19 +63622,47 @@ function updateLearnNav() {
   let idx = 0;
   navItems.forEach(item => {
     item.classList.remove('active', 'completed');
-    if (idx === 0 && state.currentCharIndex === -1) item.classList.add('active');
-    else if (idx === 1 && day.reviewChars.length > 0) { /* review tag */ }
-    else if (idx >= (day.reviewChars.length > 0 ? 2 : 1) && idx < (day.reviewChars.length > 0 ? 2 : 1) + state.charList.length) {
-      const charIdx = idx - (day.reviewChars.length > 0 ? 2 : 1);
-      if (charIdx === state.currentCharIndex) item.classList.add('active');
-      else {
-        const c = state.charList[charIdx];
-        if (c) {
-          const charKey = `n_${c.globalIndex}`;
-          if (status.learnedChars.includes(charKey)) item.classList.add('completed');
+    // 重置样式
+    item.style.cssText = '';
+    
+    if (idx === 0) {
+      // 总览按钮
+      if (state.currentCharIndex === -1) item.classList.add('active');
+    } else if (idx > 0 && idx <= state.charList.length) {
+      // 字按钮（复习字 + 新字）
+      const charIdx = idx - 1; // 减1因为第一个是总览按钮
+      const charObj = state.charList[charIdx];
+      
+      if (charIdx === state.currentCharIndex) {
+        item.classList.add('active');
+      } else {
+        const charKey = charObj.isReview ? `r_${charObj.globalIndex}` : `n_${charObj.globalIndex}`;
+        if (status.learnedChars.includes(charKey)) item.classList.add('completed');
+      }
+      
+      // 应用颜色样式：复习字蓝色，新字红色
+      if (charObj.isReview) {
+        // 复习字 - 蓝色
+        if (charIdx === state.currentCharIndex) {
+          item.style.cssText = 'background: var(--blue); border-color: var(--blue); color: white;';
+        } else if (status.learnedChars.includes(`r_${charObj.globalIndex}`)) {
+          item.style.cssText = 'background: var(--blue-light); border-color: var(--blue); color: #2563EB;';
+        } else {
+          item.style.cssText = 'background: var(--blue-light); border-color: var(--blue); color: #2563EB;';
+        }
+      } else {
+        // 新字 - 红色
+        if (charIdx === state.currentCharIndex) {
+          // 当前选中的新字使用active样式
+        } else if (status.learnedChars.includes(`n_${charObj.globalIndex}`)) {
+          // 已学过的新字使用completed样式（绿色）
+        } else {
+          // 未学的新字 - 红色
+          item.style.cssText = 'background: var(--primary-light); border-color: var(--primary); color: var(--primary);';
         }
       }
     }
+    // 练习和绘本按钮保持原有样式
     idx++;
   });
 }
